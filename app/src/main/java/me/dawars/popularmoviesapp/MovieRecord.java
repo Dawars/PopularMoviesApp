@@ -5,23 +5,23 @@ package me.dawars.popularmoviesapp;
  */
 
 public class MovieRecord {
-    String mTitle;
-    String mImageUrl;
+    String title;
+    String imageUrl;
     float rating;
 
-    public MovieRecord(String mTitle, String mImageUrl, float rating) {
+    public MovieRecord(String title, String imageUrl, float rating) {
 
-        this.mTitle = mTitle;
-        this.mImageUrl = mImageUrl;
+        this.title = title;
+        this.imageUrl = imageUrl;
         this.rating = rating;
     }
 
     public String getTitle() {
-        return mTitle;
+        return title;
     }
 
     public String getPosterUrl() {
-        return mImageUrl;
+        return imageUrl;
     }
 
     public float getRating() {

@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:adjustViewBounds="true"
-            android:scaleType="fitCenter"/>
+            android:scaleType="fitCenter" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -23,7 +23,7 @@
             android:layout_below="@+id/im_poster"
             android:background="#fff"
             android:orientation="vertical"
-            android:padding="4dp">
+            android:padding="6dp">
 
             <TextView
                 android:id="@+id/tv_title"
@@ -31,8 +31,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:lines="2"
-                android:paddingBottom="8dp"
-                android:paddingTop="8dp"
+                android:text="asd"
                 android:textColor="@color/colorBlack"
                 android:textSize="12sp" />
         </LinearLayout>

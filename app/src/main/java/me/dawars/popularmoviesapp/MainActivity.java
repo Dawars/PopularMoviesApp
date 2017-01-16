@@ -18,30 +18,30 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String SORT_POPULAR = "popular";
 
-    private RecyclerView mRecyclerView;
+    private RecyclerView recyclerView;
 
-    private MovieAdapter mAdapter;
+    private MovieAdapter movieAdapter;
 
-    private ProgressBar mLoadingIndicator;
+    private ProgressBar loadingIndicator;
 
-    private TextView mErrorMessageDisplay;
+    private TextView errorMessageDisplay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.rv_movie_thumbnails);
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loader);
-        mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error);
+        recyclerView = (RecyclerView) findViewById(R.id.rv_movie_thumbnails);
+        loadingIndicator = (ProgressBar) findViewById(R.id.pb_loader);
+        errorMessageDisplay = (TextView) findViewById(R.id.tv_error);
 
         // TODO landscape grid count
         GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
 
-        mAdapter = new MovieAdapter();
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(layoutManager);
+        movieAdapter = new MovieAdapter();
+        recyclerView.setAdapter(movieAdapter);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(layoutManager);
 
         loadMovieData();
     }
@@ -53,13 +53,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void showMovieDataView() {
-        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
-        mRecyclerView.setVisibility(View.VISIBLE);
+        errorMessageDisplay.setVisibility(View.INVISIBLE);
+        recyclerView.setVisibility(View.VISIBLE);
     }
 
     void showErrorView() {
-        mErrorMessageDisplay.setVisibility(View.VISIBLE);
-        mRecyclerView.setVisibility(View.INVISIBLE);
+        errorMessageDisplay.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.INVISIBLE);
     }
 
     class MovieLoader extends AsyncTask<String, Void, MovieRecord[]> {
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mLoadingIndicator.setVisibility(View.VISIBLE);
+            loadingIndicator.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -93,11 +93,11 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(MovieRecord[] movieData) {
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
+            loadingIndicator.setVisibility(View.INVISIBLE);
 
             if (movieData != null && movieData.length > 0) {
                 showMovieDataView();
-                mAdapter.setMovieData(movieData);
+                movieAdapter.setMovieData(movieData);
             } else {
                 showErrorView();
             }

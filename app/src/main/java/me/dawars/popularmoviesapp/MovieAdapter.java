@@ -20,7 +20,7 @@ import me.dawars.popularmoviesapp.utils.NetworkUtils;
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> implements View.OnClickListener {
 
 
-    private MovieRecord[] mMovieData;
+    private MovieRecord[] movieData;
 
     public MovieAdapter() {
 
@@ -40,19 +40,19 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     @Override
     public void onBindViewHolder(MovieViewHolder holder, int position) {
-        holder.bind(mMovieData[position]);
+        holder.bind(movieData[position]);
     }
 
     @Override
     public int getItemCount() {
-        if (mMovieData == null) {
+        if (movieData == null) {
             return 0;
         }
-        return mMovieData.length;
+        return movieData.length;
     }
 
     public void setMovieData(MovieRecord[] movieData) {
-        mMovieData = movieData;
+        this.movieData = movieData;
         notifyDataSetChanged();
     }
 
@@ -62,20 +62,20 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     }
 
     class MovieViewHolder extends RecyclerView.ViewHolder {
-        public final TextView mTitleTextView;
-        public final ImageView mPosterImageView;
+        public final TextView titleTextView;
+        public final ImageView posterImageView;
 
         public MovieViewHolder(View view) {
             super(view);
 
-            mTitleTextView = (TextView) view.findViewById(R.id.tv_title);
-            mPosterImageView = (ImageView) view.findViewById(R.id.im_poster);
+            titleTextView = (TextView) view.findViewById(R.id.tv_title);
+            posterImageView = (ImageView) view.findViewById(R.id.im_poster);
         }
 
         public void bind(MovieRecord record) {
             Uri posterUri = NetworkUtils.getPosterUri(record.getPosterUrl());
-            Picasso.with(mPosterImageView.getContext()).load(posterUri).into(mPosterImageView);
-            mTitleTextView.setText(record.getTitle());
+            Picasso.with(posterImageView.getContext()).load(posterUri).into(posterImageView);
+            titleTextView.setText(record.getTitle());
         }
     }
 }
