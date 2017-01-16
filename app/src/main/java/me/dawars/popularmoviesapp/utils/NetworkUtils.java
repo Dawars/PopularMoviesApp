@@ -70,7 +70,7 @@ public class NetworkUtils {
     }
 
     public static Uri getPosterUri(String posterUrl) {
-        // could change image size based on screen size
+        // could change image size based on screen size "w342" or "w185"
         return Uri.parse("http://image.tmdb.org/t/p/w342/" + posterUrl);
     }
 }

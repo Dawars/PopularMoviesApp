@@ -17,7 +17,7 @@ import me.dawars.popularmoviesapp.utils.NetworkUtils;
  * Created by dawars on 1/15/17.
  */
 
-public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> implements View.OnClickListener{
+public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> implements View.OnClickListener {
 
 
     private MovieRecord[] mMovieData;

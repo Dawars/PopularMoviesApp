@@ -3,7 +3,7 @@ package me.dawars.popularmoviesapp;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -35,8 +35,8 @@ public class MainActivity extends AppCompatActivity {
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loader);
         mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error);
 
-        // TODO change to GridLayoutManager
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        // TODO landscape grid count
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
 
         mAdapter = new MovieAdapter();
         mRecyclerView.setAdapter(mAdapter);

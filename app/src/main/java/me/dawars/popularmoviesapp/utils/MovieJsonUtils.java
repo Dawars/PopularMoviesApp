@@ -21,6 +21,8 @@ public class MovieJsonUtils {
 
         JSONObject moviesJson = new JSONObject(jsonResponse);
 
+        // TODO add error message chat
+
         JSONArray moviesArray = moviesJson.getJSONArray(MOVIES_RESULTS);
 
         movieRecords = new MovieRecord[moviesArray.length()];
