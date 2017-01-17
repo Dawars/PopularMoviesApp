@@ -5,12 +5,13 @@ package me.dawars.popularmoviesapp;
  */
 
 public class MovieRecord {
+    int id;
     String title;
     String imageUrl;
     float rating;
 
-    public MovieRecord(String title, String imageUrl, float rating) {
-
+    public MovieRecord(int id, String title, String imageUrl, float rating) {
+        this.id = id;
         this.title = title;
         this.imageUrl = imageUrl;
         this.rating = rating;
@@ -26,5 +27,9 @@ public class MovieRecord {
 
     public float getRating() {
         return rating;
+    }
+
+    public int getId() {
+        return id;
     }
 }

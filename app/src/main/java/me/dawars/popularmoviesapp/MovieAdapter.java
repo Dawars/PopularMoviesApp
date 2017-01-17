@@ -17,12 +17,28 @@ import me.dawars.popularmoviesapp.utils.NetworkUtils;
  * Created by dawars on 1/15/17.
  */
 
-public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> implements View.OnClickListener {
+public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
 
+    private static final String TAG = MovieAdapter.class.getSimpleName();
 
     private MovieRecord[] movieData;
 
-    public MovieAdapter() {
+    final private ListItemClickListener clickListener;
+
+    public MovieRecord getMovieRecord(int position) {
+        if (position < 0 || position >= movieData.length)
+            throw new ArrayIndexOutOfBoundsException();
+
+        return movieData[position];
+    }
+
+    public interface ListItemClickListener {
+        void onItemClick(int position);
+    }
+
+    public MovieAdapter(ListItemClickListener clickListener) {
+
+        this.clickListener = clickListener;
 
     }
 
@@ -56,20 +72,17 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         notifyDataSetChanged();
     }
 
-    @Override
-    public void onClick(View v) {
-        //TODO add own onClick listener
-    }
-
-    class MovieViewHolder extends RecyclerView.ViewHolder {
+    class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final TextView titleTextView;
         public final ImageView posterImageView;
 
-        public MovieViewHolder(View view) {
-            super(view);
+        public MovieViewHolder(View itemView) {
+            super(itemView);
 
-            titleTextView = (TextView) view.findViewById(R.id.tv_title);
-            posterImageView = (ImageView) view.findViewById(R.id.im_poster);
+            titleTextView = (TextView) itemView.findViewById(R.id.tv_title);
+            posterImageView = (ImageView) itemView.findViewById(R.id.im_poster);
+
+            itemView.setOnClickListener(this);
         }
 
         public void bind(MovieRecord record) {
@@ -77,5 +90,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             Picasso.with(posterImageView.getContext()).load(posterUri).into(posterImageView);
             titleTextView.setText(record.getTitle());
         }
+
+        @Override
+        public void onClick(View v) {
+            int position = getAdapterPosition();
+            clickListener.onItemClick(position);
+        }
+
     }
 }

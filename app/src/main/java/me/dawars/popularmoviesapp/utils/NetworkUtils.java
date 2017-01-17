@@ -69,8 +69,13 @@ public class NetworkUtils {
         }
     }
 
+    /**
+     * Get poster url in appropriate size
+     * @param posterUrl
+     * @return
+     */
     public static Uri getPosterUri(String posterUrl) {
-        // could change image size based on screen size "w342" or "w185"
+        //"w92", "w154", "w185", "w342", "w500", "w780"
         return Uri.parse("http://image.tmdb.org/t/p/w342/" + posterUrl);
     }
 }
