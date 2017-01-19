@@ -5,11 +5,12 @@ import android.net.Uri;
 import android.util.Log;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Scanner;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Created by dawars on 1/15/17.
@@ -24,12 +25,21 @@ public class NetworkUtils {
 
     private static final String MOVIES_BASE_URL = "http://api.themoviedb.org/3/movie/";
 
+    public static final String SORT_POPULAR = "popular";
+    public static final String SORT_RATING = "top_rated";
+
     private static final String API_PARAM = "api_key";
     private static final String PAGE_PARAM = "page";
 
 
-    public static URL buildUrl(String sort) {
-        Uri uri = Uri.parse(MOVIES_BASE_URL + sort).buildUpon()
+    /**
+     * Builds url for most popular/highly rated movies and
+     *
+     * @param param can be SORT_POPULAR, SORT_RATING or a movie id
+     * @return
+     */
+    public static URL buildUrl(String param) {
+        Uri uri = Uri.parse(MOVIES_BASE_URL + param).buildUpon()
                 .appendQueryParameter(API_PARAM, MOVIES_API_KEY).build();
 
         Log.v(TAG, "Url: " + uri.toString());
@@ -51,26 +61,18 @@ public class NetworkUtils {
      * @throws IOException Related to network and stream reading
      */
     public static String getResponseFromHttpUrl(URL url) throws IOException {
-        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-        try {
-            InputStream in = urlConnection.getInputStream();
 
-            Scanner scanner = new Scanner(in);
-            scanner.useDelimiter("\\A");
+        OkHttpClient client = new OkHttpClient();
 
-            boolean hasInput = scanner.hasNext();
-            if (hasInput) {
-                return scanner.next();
-            } else {
-                return null;
-            }
-        } finally {
-            urlConnection.disconnect();
-        }
+        Request request = new Request.Builder().url(url).build();
+        Response response = client.newCall(request).execute();
+
+        return response.body().string();
     }
 
     /**
      * Get poster url in appropriate size
+     *
      * @param posterUrl
      * @return
      */

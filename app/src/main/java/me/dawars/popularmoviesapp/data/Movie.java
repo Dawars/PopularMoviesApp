@@ -1,16 +1,18 @@
-package me.dawars.popularmoviesapp;
+package me.dawars.popularmoviesapp.data;
 
 /**
  * Created by dawars on 1/15/17.
  */
 
-public class MovieRecord {
-    int id;
+public class Movie {
+    String id;
     String title;
     String imageUrl;
     float rating;
 
-    public MovieRecord(int id, String title, String imageUrl, float rating) {
+    // TODO GSON
+
+    public Movie(String id, String title, String imageUrl, float rating) {
         this.id = id;
         this.title = title;
         this.imageUrl = imageUrl;
@@ -29,7 +31,7 @@ public class MovieRecord {
         return rating;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 }

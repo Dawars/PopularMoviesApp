@@ -4,13 +4,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import me.dawars.popularmoviesapp.MovieRecord;
+import me.dawars.popularmoviesapp.data.Movie;
 
 /**
  * Created by dawars on 1/15/17.
  */
 public class MovieJsonUtils {
-    public static MovieRecord[] getMovieObjectFromJson(String jsonResponse) throws JSONException {
+    public static Movie[] getMovieObjectsFromJson(String jsonResponse) throws JSONException {
         final String MOVIES_RESULTS = "results";
 
         final String MOVIES_ID = "id";
@@ -19,10 +19,9 @@ public class MovieJsonUtils {
         final String MOVIES_RATING = "vote_average";
 
         final String MOVIES_STATUS_CODE = "status_code";
-
         final String MOVIES_STATUS_MESSAGE = "status_message";
 
-        MovieRecord[] movieRecords;
+        Movie[] movies;
 
         JSONObject moviesJson = new JSONObject(jsonResponse);
 
@@ -41,25 +40,25 @@ public class MovieJsonUtils {
         }
         JSONArray moviesArray = moviesJson.getJSONArray(MOVIES_RESULTS);
 
-        movieRecords = new MovieRecord[moviesArray.length()];
+        movies = new Movie[moviesArray.length()];
 
 
         for (int i = 0; i < moviesArray.length(); i++) {
-            int id;
+            String id;
             String title;
             String imageUrl;
             float rating;
 
             JSONObject movie = moviesArray.getJSONObject(i);
 
-            id = Integer.parseInt(movie.getString(MOVIES_ID));
+            id = movie.getString(MOVIES_ID);
             title = movie.getString(MOVIES_TITLE);
             imageUrl = movie.getString(MOVIES_POSTER);
             rating = (float) movie.getDouble(MOVIES_RATING);
 
-            movieRecords[i] = new MovieRecord(id, title, imageUrl, rating);
+            movies[i] = new Movie(id, title, imageUrl, rating);
         }
 
-        return movieRecords;
+        return movies;
     }
 }

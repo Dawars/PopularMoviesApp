@@ -11,18 +11,18 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.net.URL;
 
+import me.dawars.popularmoviesapp.data.Movie;
 import me.dawars.popularmoviesapp.utils.MovieJsonUtils;
 import me.dawars.popularmoviesapp.utils.NetworkUtils;
+
+import static me.dawars.popularmoviesapp.utils.NetworkUtils.SORT_POPULAR;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.ListItemClickListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
-
-    private static final String SORT_POPULAR = "popular";
 
     private RecyclerView recyclerView;
 
@@ -85,9 +85,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
     @Override
     public void onItemClick(int position) {
-        Toast.makeText(this, "pos:" + position, Toast.LENGTH_SHORT).show();
-        MovieRecord movie = movieAdapter.getMovieRecord(position);
-        int id = movie.getId();
+        Movie movie = movieAdapter.getMovieRecord(position);
+        String id = movie.getId();
 
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra(Intent.EXTRA_TEXT, id);
@@ -95,8 +94,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         startActivity(intent);
     }
 
-    class MovieLoader extends AsyncTask<String, Void, MovieRecord[]> {
-
+    class MovieLoader extends AsyncTask<String, Void, Movie[]> {
+        // TODO Change to AsyncTaskLoader
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -104,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         }
 
         @Override
-        protected MovieRecord[] doInBackground(String... params) {
+        protected Movie[] doInBackground(String... params) {
             if (params.length == 0) {
                 return null;
             }
@@ -113,10 +112,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
             try {
                 // TODO check for internet connectivity
                 String jsonResponse = NetworkUtils.getResponseFromHttpUrl(url);
-                MovieRecord[] movieRecords = MovieJsonUtils
-                        .getMovieObjectFromJson(jsonResponse);
+                Movie[] movies = MovieJsonUtils
+                        .getMovieObjectsFromJson(jsonResponse);
 
-                return movieRecords;
+                return movies;
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -125,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         }
 
         @Override
-        protected void onPostExecute(MovieRecord[] movieData) {
+        protected void onPostExecute(Movie[] movieData) {
             loadingIndicator.setVisibility(View.INVISIBLE);
 
             if (movieData != null && movieData.length > 0) {

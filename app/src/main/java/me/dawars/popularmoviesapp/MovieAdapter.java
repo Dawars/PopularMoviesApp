@@ -9,8 +9,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
+import me.dawars.popularmoviesapp.data.Movie;
 import me.dawars.popularmoviesapp.utils.NetworkUtils;
 
 /**
@@ -21,11 +22,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     private static final String TAG = MovieAdapter.class.getSimpleName();
 
-    private MovieRecord[] movieData;
+    private Movie[] movieData;
 
     final private ListItemClickListener clickListener;
 
-    public MovieRecord getMovieRecord(int position) {
+    public Movie getMovieRecord(int position) {
         if (position < 0 || position >= movieData.length)
             throw new ArrayIndexOutOfBoundsException();
 
@@ -67,7 +68,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         return movieData.length;
     }
 
-    public void setMovieData(MovieRecord[] movieData) {
+    public void setMovieData(Movie[] movieData) {
         this.movieData = movieData;
         notifyDataSetChanged();
     }
@@ -85,9 +86,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             itemView.setOnClickListener(this);
         }
 
-        public void bind(MovieRecord record) {
+        public void bind(Movie record) {
             Uri posterUri = NetworkUtils.getPosterUri(record.getPosterUrl());
-            Picasso.with(posterImageView.getContext()).load(posterUri).into(posterImageView);
+            Glide.with(posterImageView.getContext()).load(posterUri).into(posterImageView);
+            // TODO: add palette and error image
             titleTextView.setText(record.getTitle());
         }
 
@@ -96,6 +98,5 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             int position = getAdapterPosition();
             clickListener.onItemClick(position);
         }
-
     }
 }
