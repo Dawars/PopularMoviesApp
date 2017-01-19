@@ -12,10 +12,13 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+
+import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 import me.dawars.popularmoviesapp.data.Movie;
-import me.dawars.popularmoviesapp.utils.MovieJsonUtils;
 import me.dawars.popularmoviesapp.utils.NetworkUtils;
 
 import static me.dawars.popularmoviesapp.utils.NetworkUtils.SORT_POPULAR;
@@ -23,6 +26,7 @@ import static me.dawars.popularmoviesapp.utils.NetworkUtils.SORT_POPULAR;
 public class MainActivity extends AppCompatActivity implements MovieAdapter.ListItemClickListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
+    public static final String EXTRA_MOVIE = "EXTRA_MOVIE_KEY";
 
     private RecyclerView recyclerView;
 
@@ -68,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     }
 
     private void loadMovieData() {
+        // TODO check for internet connectivity - snack bar
+
         showMovieDataView();
         // TODO: add option to change sorting criteria
         new MovieLoader().execute(SORT_POPULAR);
@@ -85,16 +91,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
     @Override
     public void onItemClick(int position) {
-        Movie movie = movieAdapter.getMovieRecord(position);
-        String id = movie.getId();
+        Movie movie = movieAdapter.getMovie(position);
 
         Intent intent = new Intent(this, DetailActivity.class);
-        intent.putExtra(Intent.EXTRA_TEXT, id);
+        intent.putExtra(EXTRA_MOVIE, movie);
 
         startActivity(intent);
     }
 
-    class MovieLoader extends AsyncTask<String, Void, Movie[]> {
+    class MovieLoader extends AsyncTask<String, Void, List<Movie>> {
         // TODO Change to AsyncTaskLoader
         @Override
         protected void onPreExecute() {
@@ -103,31 +108,47 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         }
 
         @Override
-        protected Movie[] doInBackground(String... params) {
+        protected List<Movie> doInBackground(String... params) {
             if (params.length == 0) {
                 return null;
             }
 
             URL url = NetworkUtils.buildUrl(params[0]);
+            String jsonResponse = null;
             try {
-                // TODO check for internet connectivity
-                String jsonResponse = NetworkUtils.getResponseFromHttpUrl(url);
-                Movie[] movies = MovieJsonUtils
-                        .getMovieObjectsFromJson(jsonResponse);
-
-                return movies;
-
-            } catch (Exception e) {
+                jsonResponse = NetworkUtils.getResponseFromHttpUrl(url);
+            } catch (IOException e) {
                 e.printStackTrace();
                 return null;
             }
+            Movie.Response response = new Gson().fromJson(jsonResponse, Movie.Response.class);
+
+            // TODO check for error
+/*
+                if (moviesJson.has(MOVIES_STATUS_CODE)) {
+                    int errorCode = moviesJson.getInt(MOVIES_STATUS_CODE);
+                    switch (errorCode) {
+                        case 34: // The resource you requested could not be found.
+                            return null;
+                        case 7: // Invalid API key: You must be granted a valid key.
+                            return null;
+                        default:
+                            // Server probably down
+                            return null;
+                    }
+                }
+*/
+            if(response.movies == null){
+                return null;
+            }
+            return response.movies;
         }
 
         @Override
-        protected void onPostExecute(Movie[] movieData) {
+        protected void onPostExecute(List<Movie> movieData) {
             loadingIndicator.setVisibility(View.INVISIBLE);
 
-            if (movieData != null && movieData.length > 0) {
+            if (movieData != null && movieData.size() > 0) {
                 showMovieDataView();
                 movieAdapter.setMovieData(movieData);
             } else {

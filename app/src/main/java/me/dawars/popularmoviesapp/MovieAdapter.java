@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.List;
+
 import me.dawars.popularmoviesapp.data.Movie;
 import me.dawars.popularmoviesapp.utils.NetworkUtils;
 
@@ -22,15 +24,15 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     private static final String TAG = MovieAdapter.class.getSimpleName();
 
-    private Movie[] movieData;
+    private List<Movie> movieData;
 
     final private ListItemClickListener clickListener;
 
-    public Movie getMovieRecord(int position) {
-        if (position < 0 || position >= movieData.length)
+    public Movie getMovie(int position) {
+        if (position < 0 || position >= movieData.size())
             throw new ArrayIndexOutOfBoundsException();
 
-        return movieData[position];
+        return movieData.get(position);
     }
 
     public interface ListItemClickListener {
@@ -57,7 +59,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     @Override
     public void onBindViewHolder(MovieViewHolder holder, int position) {
-        holder.bind(movieData[position]);
+        holder.bind(movieData.get(position));
     }
 
     @Override
@@ -65,10 +67,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         if (movieData == null) {
             return 0;
         }
-        return movieData.length;
+        return movieData.size();
     }
 
-    public void setMovieData(Movie[] movieData) {
+    public void setMovieData(List<Movie> movieData) {
         this.movieData = movieData;
         notifyDataSetChanged();
     }
