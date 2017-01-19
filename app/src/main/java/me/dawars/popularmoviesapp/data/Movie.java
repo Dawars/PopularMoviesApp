@@ -104,10 +104,6 @@ public class Movie implements Parcelable {
 
     }
 
-    public String getPosterUrl() {
-        return posterPath;
-    }
-
     public boolean isAdult() {
         return adult;
     }
@@ -119,7 +115,6 @@ public class Movie implements Parcelable {
     public String getTitle() {
         return title;
     }
-
 
     public String getBackdropPath() {
         return backdropPath;

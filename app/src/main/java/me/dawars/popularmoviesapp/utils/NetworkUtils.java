@@ -76,7 +76,7 @@ public class NetworkUtils {
      * @param posterUrl
      * @return
      */
-    public static Uri getPosterUri(String posterUrl) {
+    public static Uri getImageUri(String posterUrl, int width) {
         //"w92", "w154", "w185", "w342", "w500", "w780"
         return Uri.parse("http://image.tmdb.org/t/p/w342/" + posterUrl);
     }
