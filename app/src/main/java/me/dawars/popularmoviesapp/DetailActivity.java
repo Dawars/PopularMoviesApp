@@ -40,12 +40,10 @@ public class DetailActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         Intent intent = getIntent();
-        // check intent
 
         if (intent != null && intent.hasExtra(MainActivity.EXTRA_MOVIE)) {
             Movie movie = intent.getExtras().getParcelable(MainActivity.EXTRA_MOVIE);
             Log.v(TAG, "Movie: " + movie.getTitle());
-            getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
 
             bindData(movie);
         }

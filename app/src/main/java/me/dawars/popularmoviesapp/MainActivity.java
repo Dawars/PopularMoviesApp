@@ -7,17 +7,26 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import me.dawars.popularmoviesapp.data.Movie;
 import me.dawars.popularmoviesapp.utils.NetworkUtils;
 
@@ -27,25 +36,32 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
     public static final String TAG = MainActivity.class.getSimpleName();
     public static final String EXTRA_MOVIE = "EXTRA_MOVIE_KEY";
+    private static final String MOVIES_STATUS_CODE = "status_code";
 
-    private RecyclerView recyclerView;
+    @BindView(R.id.rv_movie_thumbnails)
+    RecyclerView recyclerView;
 
     private GridLayoutManager layoutManager;
     private MovieAdapter movieAdapter;
 
-    private ProgressBar loadingIndicator;
-    private TextView errorMessageDisplay;
+    @BindView(R.id.pb_loader)
+    ProgressBar loadingIndicator;
+
+    @BindView(R.id.tv_error)
+    TextView errorMessageDisplay;
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
+        setSupportActionBar(toolbar);
         Log.v(TAG, "onCreate");
-
-        recyclerView = (RecyclerView) findViewById(R.id.rv_movie_thumbnails);
-        loadingIndicator = (ProgressBar) findViewById(R.id.pb_loader);
-        errorMessageDisplay = (TextView) findViewById(R.id.tv_error);
 
         layoutManager = new GridLayoutManager(this, 3);
 
@@ -54,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
-        loadMovieData();
+        loadMovieData(SORT_POPULAR);
     }
 
     @Override
@@ -71,12 +87,27 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         }
     }
 
-    private void loadMovieData() {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.sort_menu_item) {
+            // TODO: add option to change sorting criteria
+//            loadMovieData();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void loadMovieData(String sortBy) {
         // TODO check for internet connectivity - snack bar
 
         showMovieDataView();
-        // TODO: add option to change sorting criteria
-        new MovieLoader().execute(SORT_POPULAR);
+        new MovieLoader().execute(sortBy);
     }
 
     void showMovieDataView() {
@@ -114,19 +145,21 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
             }
 
             URL url = NetworkUtils.buildUrl(params[0]);
+
             String jsonResponse = null;
+
             try {
                 jsonResponse = NetworkUtils.getResponseFromHttpUrl(url);
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;
             }
-            Movie.Response response = new Gson().fromJson(jsonResponse, Movie.Response.class);
 
-            // TODO check for error
-/*
-                if (moviesJson.has(MOVIES_STATUS_CODE)) {
-                    int errorCode = moviesJson.getInt(MOVIES_STATUS_CODE);
+            // TODO display snack bar with error if possible here
+            try {
+                JSONObject jsonObject = new JSONObject(jsonResponse);
+                if (jsonObject.has(MOVIES_STATUS_CODE)) {
+                    int errorCode = jsonObject.getInt(MOVIES_STATUS_CODE);
                     switch (errorCode) {
                         case 34: // The resource you requested could not be found.
                             return null;
@@ -137,8 +170,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
                             return null;
                     }
                 }
-*/
-            if(response.movies == null){
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
+            }
+
+            Movie.Response response = new Gson().fromJson(jsonResponse, Movie.Response.class);
+
+            if (response.movies == null) {
                 return null;
             }
             return response.movies;
