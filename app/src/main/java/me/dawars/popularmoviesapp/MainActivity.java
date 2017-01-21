@@ -2,8 +2,10 @@ package me.dawars.popularmoviesapp;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -32,11 +34,17 @@ import me.dawars.popularmoviesapp.utils.NetworkUtils;
 
 import static me.dawars.popularmoviesapp.utils.NetworkUtils.SORT_POPULAR;
 
-public class MainActivity extends AppCompatActivity implements MovieAdapter.ListItemClickListener {
+public class MainActivity extends AppCompatActivity
+        implements MovieAdapter.ListItemClickListener, LoaderManager.LoaderCallbacks<List<Movie>> {
 
     public static final String TAG = MainActivity.class.getSimpleName();
+
     public static final String EXTRA_MOVIE = "EXTRA_MOVIE_KEY";
     private static final String MOVIES_STATUS_CODE = "status_code";
+    public static final int LOADER_MOVIE_ID = 2;
+
+
+    String sortBy = NetworkUtils.SORT_POPULAR;
 
     @BindView(R.id.rv_movie_thumbnails)
     RecyclerView recyclerView;
@@ -61,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
-        Log.v(TAG, "onCreate");
 
         layoutManager = new GridLayoutManager(this, 3);
 
@@ -70,7 +77,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
-        loadMovieData(SORT_POPULAR);
+        LoaderManager loaderManager = getSupportLoaderManager();
+        loaderManager.initLoader(LOADER_MOVIE_ID, null, this);
     }
 
     @Override
@@ -97,17 +105,27 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.sort_menu_item) {
-            // TODO: add option to change sorting criteria
+            // TODO: add option to change sorting criteria - FABs
 //            loadMovieData();
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void loadMovieData(String sortBy) {
-        // TODO check for internet connectivity - snack bar
 
-        showMovieDataView();
-        new MovieLoader().execute(sortBy);
+        if (NetworkUtils.isNetworkAvailable(this)) {
+            invalidateData();
+            showMovieDataView();
+            LoaderManager loaderManager = getSupportLoaderManager();
+            loaderManager.restartLoader(LOADER_MOVIE_ID, null, this);
+        } else {
+
+            // TODO snack bar no connection
+        }
+    }
+
+    private void invalidateData() {
+        movieAdapter.setMovieData(null);
     }
 
     void showMovieDataView() {
@@ -130,69 +148,83 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         startActivity(intent);
     }
 
-    class MovieLoader extends AsyncTask<String, Void, List<Movie>> {
-        // TODO Change to AsyncTaskLoader
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            loadingIndicator.setVisibility(View.VISIBLE);
-        }
+    @Override
+    public Loader<List<Movie>> onCreateLoader(int id, final Bundle args) {
+        return new AsyncTaskLoader<List<Movie>>(this) {
+            public List<Movie> movieData;
 
-        @Override
-        protected List<Movie> doInBackground(String... params) {
-            if (params.length == 0) {
-                return null;
-            }
-
-            URL url = NetworkUtils.buildUrl(params[0]);
-
-            String jsonResponse = null;
-
-            try {
-                jsonResponse = NetworkUtils.getResponseFromHttpUrl(url);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-
-            // TODO display snack bar with error if possible here
-            try {
-                JSONObject jsonObject = new JSONObject(jsonResponse);
-                if (jsonObject.has(MOVIES_STATUS_CODE)) {
-                    int errorCode = jsonObject.getInt(MOVIES_STATUS_CODE);
-                    switch (errorCode) {
-                        case 34: // The resource you requested could not be found.
-                            return null;
-                        case 7: // Invalid API key: You must be granted a valid key.
-                            return null;
-                        default:
-                            // Server probably down
-                            return null;
-                    }
+            @Override
+            protected void onStartLoading() {
+                if (movieData != null) {
+                    deliverResult(movieData);
+                } else {
+                    loadingIndicator.setVisibility(View.VISIBLE);
+                    forceLoad();
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return null;
             }
 
-            Movie.Response response = new Gson().fromJson(jsonResponse, Movie.Response.class);
+            @Override
+            public List<Movie> loadInBackground() {
+                URL url = NetworkUtils.buildUrl(sortBy); // FIXME add parameter in bundle
 
-            if (response.movies == null) {
-                return null;
+                String jsonResponse = null;
+
+                try {
+                    jsonResponse = NetworkUtils.getResponseFromHttpUrl(url);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+
+                // TODO display snack bar with error if possible here
+                try {
+                    JSONObject jsonObject = new JSONObject(jsonResponse);
+                    if (jsonObject.has(MOVIES_STATUS_CODE)) {
+                        int errorCode = jsonObject.getInt(MOVIES_STATUS_CODE);
+                        switch (errorCode) {
+                            case 34: // The resource you requested could not be found.
+                                return null;
+                            case 7: // Invalid API key: You must be granted a valid key.
+                                return null;
+                            default:
+                                // Server probably down
+                                return null;
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+
+                Movie.Response response = new Gson().fromJson(jsonResponse, Movie.Response.class);
+
+                if (response == null) {
+                    return null;
+                }
+                return response.movies;
             }
-            return response.movies;
+
+            @Override
+            public void deliverResult(List<Movie> data) {
+                movieData = data;
+                super.deliverResult(data);
+            }
+        };
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> movieData) {
+        loadingIndicator.setVisibility(View.INVISIBLE);
+        movieAdapter.setMovieData(movieData);
+
+        if (movieData != null && movieData.size() > 0) {
+            showMovieDataView();
+        } else {
+            showErrorView();
         }
+    }
 
-        @Override
-        protected void onPostExecute(List<Movie> movieData) {
-            loadingIndicator.setVisibility(View.INVISIBLE);
-
-            if (movieData != null && movieData.size() > 0) {
-                showMovieDataView();
-                movieAdapter.setMovieData(movieData);
-            } else {
-                showErrorView();
-            }
-        }
+    @Override
+    public void onLoaderReset(Loader<List<Movie>> loader) {
     }
 }

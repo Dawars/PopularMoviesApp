@@ -5,6 +5,8 @@
     android:layout_height="wrap_content"
     android:foreground="?android:attr/selectableItemBackground"
     android:clickable="true"
+
+    card_view:cardPreventCornerOverlap="false"
     card_view:cardCornerRadius="2dp"
     card_view:cardUseCompatPadding="true">
 
@@ -34,7 +36,6 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:lines="2"
-                android:text="asd"
                 android:textColor="@color/colorBlack"
                 android:textSize="12sp" />
         </LinearLayout>

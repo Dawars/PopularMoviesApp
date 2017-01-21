@@ -1,6 +1,9 @@
 package me.dawars.popularmoviesapp.utils;
 
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.util.Log;
 
@@ -70,6 +73,13 @@ public class NetworkUtils {
         return response.body().string();
     }
 
+    public static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
     /**
      * Get poster url in appropriate size
      *
@@ -78,6 +88,21 @@ public class NetworkUtils {
      */
     public static Uri getImageUri(String posterUrl, int width) {
         //"w92", "w154", "w185", "w342", "w500", "w780"
-        return Uri.parse("http://image.tmdb.org/t/p/w342/" + posterUrl);
+        String w;
+
+        if (width <= 92) {
+            w = "w92";
+        } else if (width <= 154) {
+            w = "w154";
+        } else if (width <= 185) {
+            w = "w185";
+        } else if (width <= 342) {
+            w = "w342";
+        } else if (width <= 500) {
+            w = "w500";
+        } else {
+            w = "w780";
+        }
+        return Uri.parse("http://image.tmdb.org/t/p/" + w + "/" + posterUrl);
     }
 }

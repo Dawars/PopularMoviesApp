@@ -89,9 +89,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         }
 
         public void bind(Movie record) {
-            Uri posterUri = NetworkUtils.getImageUri(record.getPosterPath(), -1);
+            Uri posterUri = NetworkUtils.getImageUri(record.getPosterPath(), 185/* hard coded */);
             Glide.with(posterImageView.getContext()).load(posterUri).into(posterImageView);
-            // TODO: add palette and error image
+            // TODO: add error and loading image
             titleTextView.setText(record.getTitle());
         }
 
