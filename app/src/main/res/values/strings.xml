@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Popular Movies App</string>
+    <string name="error_message">An error has occurred</string>
+
+    <string name="sort_by">Sort by</string>
+    <string name="no_network">No network connection</string>
+    <string name="error_resource_not_found">The resource you requested could not be found.</string>
+    <string name="error_invalid_api_key">Invalid API key: You must be granted a valid key.</string>
 </resources>
