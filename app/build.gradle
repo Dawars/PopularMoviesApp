@@ -4,6 +4,12 @@ repositories {
     mavenCentral()
 }
 
+def loadKey(String property){
+    Properties properties = new Properties()
+    properties.load(new FileInputStream("app/key.preferences"))
+    return "\"" + properties.getProperty(property) +"\""
+}
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
@@ -22,7 +28,7 @@ android {
         }
 
         buildTypes.each {
-            it.buildConfigField 'String', 'THE_MOVIE_DB_API_TOKEN', TheMovieDBApiToken
+            it.buildConfigField "String", "MOVIE_DB_API_KEY", loadKey("movieDbKey")
         }
     }
 }
