@@ -5,8 +5,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -28,8 +30,8 @@ public class DetailActivity extends AppCompatActivity {
     ImageView posterImageView;
     @BindView(R.id.tv_overview)
     TextView overviewTextView;
-    @BindView(R.id.tv_rating)
-    TextView ratingTextView;
+    @BindView(R.id.rb_rating)
+    RatingBar ratingTextView;
     @BindView(R.id.tv_release_date)
     TextView releaseDateTextView;
 
@@ -54,16 +56,21 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void bindData(Movie movie) {
-        Uri backdropUri = NetworkUtils.getImageUri(movie.getBackdropPath(), backdropImage.getWidth());
+
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        int width = displaymetrics.widthPixels;
+
+        Uri backdropUri = NetworkUtils.getImageUri(movie.getBackdropPath(), width);
         Glide.with(this).load(backdropUri).into(backdropImage);
 
         titleTextView.setText(movie.getOrigTitle());
 
-        Uri posterUri = NetworkUtils.getImageUri(movie.getPosterPath(), posterImageView.getWidth());
+        Uri posterUri = NetworkUtils.getImageUri(movie.getPosterPath(), width / 2);
         Glide.with(this).load(posterUri).into(posterImageView);
 
         overviewTextView.setText(movie.getOverview());
-        ratingTextView.setText(String.valueOf(movie.getVoteAvg())); // TODO add stars
+        ratingTextView.setRating(movie.getVoteAvg());
         releaseDateTextView.setText(movie.getReleaseDate());
     }
 }

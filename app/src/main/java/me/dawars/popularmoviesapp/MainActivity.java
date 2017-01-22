@@ -3,19 +3,19 @@ package me.dawars.popularmoviesapp;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.StringRes;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -29,10 +29,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import me.dawars.popularmoviesapp.data.Movie;
 import me.dawars.popularmoviesapp.utils.NetworkUtils;
-
-import static me.dawars.popularmoviesapp.utils.NetworkUtils.SORT_POPULAR;
 
 public class MainActivity extends AppCompatActivity
         implements MovieAdapter.ListItemClickListener, LoaderManager.LoaderCallbacks<List<Movie>> {
@@ -52,8 +51,8 @@ public class MainActivity extends AppCompatActivity
     private GridLayoutManager layoutManager;
     private MovieAdapter movieAdapter;
 
-    @BindView(R.id.pb_loader)
-    ProgressBar loadingIndicator;
+//    @BindView(R.id.pb_loader)
+//    ProgressBar loadingIndicator;
 
     @BindView(R.id.tv_error)
     TextView errorMessageDisplay;
@@ -61,6 +60,17 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
+    @BindView(R.id.fab_sort)
+    FloatingActionButton fabSort;
+    @BindView(R.id.fab_sort_popular)
+    FloatingActionButton fabSortPopular;
+    @BindView(R.id.fab_sort_rating)
+    FloatingActionButton fabSortRating;
+
+    @BindView(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout swipreRefresh;
+
+    private boolean isFABOpen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,8 +87,28 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
+        swipreRefresh.setColorSchemeResources(R.color.pink, R.color.indigo, R.color.lime);
+        swipreRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.v(TAG, "refreshing");
+                loadMovieData(sortBy);
+            }
+        });
+
+        swipreRefresh.setRefreshing(true);
         LoaderManager loaderManager = getSupportLoaderManager();
         loaderManager.initLoader(LOADER_MOVIE_ID, null, this);
+
+        // FIXME code duplication with loadMovieData()
+        if (!NetworkUtils.isNetworkAvailable(this)) {
+            swipreRefresh.setRefreshing(false);
+            snackbar(R.string.no_network);
+        }
+    }
+
+    private void snackbar(@StringRes int resId) {
+        Snackbar.make(fabSort, resId, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -95,32 +125,15 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.sort_menu_item) {
-            // TODO: add option to change sorting criteria - FABs
-//            loadMovieData();
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     private void loadMovieData(String sortBy) {
-
         if (NetworkUtils.isNetworkAvailable(this)) {
             invalidateData();
             showMovieDataView();
             LoaderManager loaderManager = getSupportLoaderManager();
             loaderManager.restartLoader(LOADER_MOVIE_ID, null, this);
         } else {
-
-            // TODO snack bar no connection
+            swipreRefresh.setRefreshing(false);
+            snackbar(R.string.no_network);
         }
     }
 
@@ -131,6 +144,7 @@ public class MainActivity extends AppCompatActivity
     void showMovieDataView() {
         errorMessageDisplay.setVisibility(View.INVISIBLE);
         recyclerView.setVisibility(View.VISIBLE);
+        swipreRefresh.setRefreshing(false);
     }
 
     void showErrorView() {
@@ -148,6 +162,52 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    @OnClick(R.id.fab_sort)
+    public void onFabClick(View view) {
+        if (!isFABOpen) {
+            showFABMenu();
+            // TODO change icon to close
+            fabSort.setImageResource(R.drawable.close);
+        } else {
+            closeFABMenu();
+            fabSort.setImageResource(R.drawable.sort);
+        }
+    }
+
+    private void showFABMenu() {
+        isFABOpen = true;
+        fabSortRating.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
+        fabSortPopular.animate().translationY(-getResources().getDimension(R.dimen.standard_105));
+    }
+
+    private void closeFABMenu() {
+        isFABOpen = false;
+        fabSortRating.animate().translationY(0);
+        fabSortPopular.animate().translationY(0);
+    }
+
+    @OnClick({R.id.fab_sort_rating, R.id.fab_sort_popular})
+    public void onSortCritChange(View view) {
+        switch (view.getId()) {
+            case R.id.fab_sort_popular:
+                sortBy = NetworkUtils.SORT_POPULAR;
+                break;
+            case R.id.fab_sort_rating:
+                sortBy = NetworkUtils.SORT_RATING;
+                break;
+        }
+        loadMovieData(sortBy);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!isFABOpen) {
+            super.onBackPressed();
+        } else {
+            closeFABMenu();
+        }
+    }
+
     @Override
     public Loader<List<Movie>> onCreateLoader(int id, final Bundle args) {
         return new AsyncTaskLoader<List<Movie>>(this) {
@@ -158,7 +218,7 @@ public class MainActivity extends AppCompatActivity
                 if (movieData != null) {
                     deliverResult(movieData);
                 } else {
-                    loadingIndicator.setVisibility(View.VISIBLE);
+//                    loadingIndicator.setVisibility(View.VISIBLE);
                     forceLoad();
                 }
             }
@@ -176,15 +236,16 @@ public class MainActivity extends AppCompatActivity
                     return null;
                 }
 
-                // TODO display snack bar with error if possible here
                 try {
                     JSONObject jsonObject = new JSONObject(jsonResponse);
                     if (jsonObject.has(MOVIES_STATUS_CODE)) {
                         int errorCode = jsonObject.getInt(MOVIES_STATUS_CODE);
                         switch (errorCode) {
                             case 34: // The resource you requested could not be found.
+                                snackbar(R.string.error_resource_not_found);
                                 return null;
                             case 7: // Invalid API key: You must be granted a valid key.
+                                snackbar(R.string.error_invalid_api_key);
                                 return null;
                             default:
                                 // Server probably down
@@ -214,7 +275,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> movieData) {
-        loadingIndicator.setVisibility(View.INVISIBLE);
+//        loadingIndicator.setVisibility(View.INVISIBLE);
         movieAdapter.setMovieData(movieData);
 
         if (movieData != null && movieData.size() > 0) {
