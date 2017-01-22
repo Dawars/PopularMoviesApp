@@ -144,7 +144,6 @@ public class MainActivity extends AppCompatActivity
     void showMovieDataView() {
         errorMessageDisplay.setVisibility(View.INVISIBLE);
         recyclerView.setVisibility(View.VISIBLE);
-        swipreRefresh.setRefreshing(false);
     }
 
     void showErrorView() {
@@ -275,8 +274,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> movieData) {
-//        loadingIndicator.setVisibility(View.INVISIBLE);
         movieAdapter.setMovieData(movieData);
+        swipreRefresh.setRefreshing(false);
 
         if (movieData != null && movieData.size() > 0) {
             showMovieDataView();
