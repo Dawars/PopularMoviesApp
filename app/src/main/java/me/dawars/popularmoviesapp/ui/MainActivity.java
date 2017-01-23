@@ -1,14 +1,17 @@
-package me.dawars.popularmoviesapp;
+package me.dawars.popularmoviesapp.ui;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -30,6 +33,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import me.dawars.popularmoviesapp.R;
+import me.dawars.popularmoviesapp.adapter.MovieAdapter;
 import me.dawars.popularmoviesapp.data.Movie;
 import me.dawars.popularmoviesapp.utils.NetworkUtils;
 
@@ -51,9 +56,6 @@ public class MainActivity extends AppCompatActivity
     private GridLayoutManager layoutManager;
     private MovieAdapter movieAdapter;
 
-//    @BindView(R.id.pb_loader)
-//    ProgressBar loadingIndicator;
-
     @BindView(R.id.tv_error)
     TextView errorMessageDisplay;
 
@@ -66,6 +68,9 @@ public class MainActivity extends AppCompatActivity
     FloatingActionButton fabSortPopular;
     @BindView(R.id.fab_sort_rating)
     FloatingActionButton fabSortRating;
+
+    @BindView(R.id.coordinator)
+    CoordinatorLayout coordinator;
 
     @BindView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout swipreRefresh;
@@ -126,6 +131,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void loadMovieData(String sortBy) {
+        swipreRefresh.setRefreshing(true);
         if (NetworkUtils.isNetworkAvailable(this)) {
             invalidateData();
             showMovieDataView();
@@ -165,21 +171,28 @@ public class MainActivity extends AppCompatActivity
     public void onFabClick(View view) {
         if (!isFABOpen) {
             showFABMenu();
-            // TODO change icon to close
-            fabSort.setImageResource(R.drawable.close);
         } else {
             closeFABMenu();
-            fabSort.setImageResource(R.drawable.sort);
         }
     }
 
     private void showFABMenu() {
+        fabSort.setImageResource(R.drawable.close);
+
         isFABOpen = true;
         fabSortRating.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
         fabSortPopular.animate().translationY(-getResources().getDimension(R.dimen.standard_105));
     }
 
     private void closeFABMenu() {
+        fabSort.setImageResource(R.drawable.sort);
+/*
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ViewAnimationUtils.createCircularReveal(coordinator,
+                    coordinator.getWidth(), coordinator.getHeight(),
+                    (int) Math.hypot(coordinator.getWidth(), coordinator.getHeight()), 0).start();
+        }
+*/
         isFABOpen = false;
         fabSortRating.animate().translationY(0);
         fabSortPopular.animate().translationY(0);
@@ -190,9 +203,19 @@ public class MainActivity extends AppCompatActivity
         switch (view.getId()) {
             case R.id.fab_sort_popular:
                 sortBy = NetworkUtils.SORT_POPULAR;
+
+                DrawableCompat.setTint(fabSortPopular.getDrawable(), getResources().getColor(R.color.colorAccent));
+                DrawableCompat.setTint(fabSortRating.getDrawable(), getResources().getColor(R.color.colorWhite));
+                fabSortPopular.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorWhite)));
+                fabSortRating.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
                 break;
             case R.id.fab_sort_rating:
                 sortBy = NetworkUtils.SORT_RATING;
+
+                DrawableCompat.setTint(fabSortRating.getDrawable(), getResources().getColor(R.color.colorAccent));
+                DrawableCompat.setTint(fabSortPopular.getDrawable(), getResources().getColor(R.color.colorWhite));
+                fabSortRating.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorWhite)));
+                fabSortPopular.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
                 break;
         }
         loadMovieData(sortBy);

@@ -23,7 +23,6 @@ import okhttp3.Response;
 public class NetworkUtils {
     public static final String TAG = NetworkUtils.class.getSimpleName();
 
-    // TODO: remove api key when publishing
     private static final String MOVIES_API_KEY = BuildConfig.MOVIE_DB_API_KEY;
 
 

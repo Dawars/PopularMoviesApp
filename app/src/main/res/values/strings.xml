@@ -6,4 +6,6 @@
     <string name="no_network">No network connection</string>
     <string name="error_resource_not_found">The resource you requested could not be found.</string>
     <string name="error_invalid_api_key">Invalid API key: You must be granted a valid key.</string>
+    <string name="best_rated">Best rated</string>
+    <string name="popular">Popular</string>
 </resources>

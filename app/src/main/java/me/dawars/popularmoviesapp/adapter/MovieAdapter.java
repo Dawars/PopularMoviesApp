@@ -1,4 +1,4 @@
-package me.dawars.popularmoviesapp;
+package me.dawars.popularmoviesapp.adapter;
 
 import android.content.Context;
 import android.net.Uri;
@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
+import me.dawars.popularmoviesapp.R;
 import me.dawars.popularmoviesapp.data.Movie;
 import me.dawars.popularmoviesapp.utils.NetworkUtils;
 

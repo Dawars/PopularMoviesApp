@@ -1,4 +1,4 @@
-package me.dawars.popularmoviesapp;
+package me.dawars.popularmoviesapp.ui;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import me.dawars.popularmoviesapp.R;
 import me.dawars.popularmoviesapp.data.Movie;
 import me.dawars.popularmoviesapp.utils.NetworkUtils;
 
@@ -49,10 +50,11 @@ public class DetailActivity extends AppCompatActivity {
 
         if (intent != null && intent.hasExtra(MainActivity.EXTRA_MOVIE)) {
             Movie movie = intent.getExtras().getParcelable(MainActivity.EXTRA_MOVIE);
-            Log.v(TAG, "Movie: " + movie.getTitle());
 
             bindData(movie);
         }
+
+        // TODO shared view transition
     }
 
     private void bindData(Movie movie) {
