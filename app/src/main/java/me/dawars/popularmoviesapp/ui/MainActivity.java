@@ -3,6 +3,8 @@ package me.dawars.popularmoviesapp.ui;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
@@ -200,20 +202,37 @@ public class MainActivity extends AppCompatActivity
 
     @OnClick({R.id.fab_sort_rating, R.id.fab_sort_popular})
     public void onSortCritChange(View view) {
+        final Drawable wrappedFabPopular = DrawableCompat.wrap(fabSortPopular.getDrawable());
+        final Drawable wrappedFabRating = DrawableCompat.wrap(fabSortRating.getDrawable());
         switch (view.getId()) {
             case R.id.fab_sort_popular:
                 sortBy = NetworkUtils.SORT_POPULAR;
 
-                DrawableCompat.setTint(fabSortPopular.getDrawable(), getResources().getColor(R.color.colorAccent));
-                DrawableCompat.setTint(fabSortRating.getDrawable(), getResources().getColor(R.color.colorWhite));
+                DrawableCompat.setTint(wrappedFabPopular, getResources().getColor(R.color.colorAccent));
+                DrawableCompat.setTint(wrappedFabRating, getResources().getColor(R.color.colorWhite));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    fabSortPopular.setBackground(wrappedFabPopular);
+                    fabSortRating.setBackground(wrappedFabRating);
+                } else {
+                    fabSortPopular.setBackgroundDrawable(wrappedFabPopular);
+                    fabSortRating.setBackgroundDrawable(wrappedFabRating);
+                }
+
                 fabSortPopular.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorWhite)));
                 fabSortRating.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
                 break;
             case R.id.fab_sort_rating:
                 sortBy = NetworkUtils.SORT_RATING;
 
-                DrawableCompat.setTint(fabSortRating.getDrawable(), getResources().getColor(R.color.colorAccent));
-                DrawableCompat.setTint(fabSortPopular.getDrawable(), getResources().getColor(R.color.colorWhite));
+                DrawableCompat.setTint(wrappedFabPopular, getResources().getColor(R.color.colorWhite));
+                DrawableCompat.setTint(wrappedFabRating, getResources().getColor(R.color.colorAccent));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    fabSortPopular.setBackground(wrappedFabPopular);
+                    fabSortRating.setBackground(wrappedFabRating);
+                } else {
+                    fabSortPopular.setBackgroundDrawable(wrappedFabPopular);
+                    fabSortRating.setBackgroundDrawable(wrappedFabRating);
+                }
                 fabSortRating.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorWhite)));
                 fabSortPopular.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
                 break;
