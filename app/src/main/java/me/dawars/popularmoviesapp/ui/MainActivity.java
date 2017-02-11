@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -23,6 +22,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -64,8 +65,8 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    @BindView(R.id.fab_sort)
-    FloatingActionButton fabSort;
+    @BindView(R.id.menu)
+    FloatingActionMenu fabMenu;
     @BindView(R.id.fab_sort_popular)
     FloatingActionButton fabSortPopular;
     @BindView(R.id.fab_sort_rating)
@@ -77,8 +78,6 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout swipreRefresh;
 
-    private boolean isFABOpen = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +85,8 @@ public class MainActivity extends AppCompatActivity
         ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
+
+        fabMenu.setIconAnimated(false);
 
         layoutManager = new GridLayoutManager(this, 3);
 
@@ -115,7 +116,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void snackbar(@StringRes int resId) {
-        Snackbar.make(fabSort, resId, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(coordinator, resId, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -169,37 +170,6 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
-    @OnClick(R.id.fab_sort)
-    public void onFabClick(View view) {
-        if (!isFABOpen) {
-            showFABMenu();
-        } else {
-            closeFABMenu();
-        }
-    }
-
-    private void showFABMenu() {
-        fabSort.setImageResource(R.drawable.close);
-
-        isFABOpen = true;
-        fabSortRating.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
-        fabSortPopular.animate().translationY(-getResources().getDimension(R.dimen.standard_105));
-    }
-
-    private void closeFABMenu() {
-        fabSort.setImageResource(R.drawable.sort);
-/*
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ViewAnimationUtils.createCircularReveal(coordinator,
-                    coordinator.getWidth(), coordinator.getHeight(),
-                    (int) Math.hypot(coordinator.getWidth(), coordinator.getHeight()), 0).start();
-        }
-*/
-        isFABOpen = false;
-        fabSortRating.animate().translationY(0);
-        fabSortPopular.animate().translationY(0);
-    }
-
     @OnClick({R.id.fab_sort_rating, R.id.fab_sort_popular})
     public void onSortCritChange(View view) {
         final Drawable wrappedFabPopular = DrawableCompat.wrap(fabSortPopular.getDrawable());
@@ -207,6 +177,7 @@ public class MainActivity extends AppCompatActivity
         switch (view.getId()) {
             case R.id.fab_sort_popular:
                 sortBy = NetworkUtils.SORT_POPULAR;
+/*
 
                 DrawableCompat.setTint(wrappedFabPopular, getResources().getColor(R.color.colorAccent));
                 DrawableCompat.setTint(wrappedFabRating, getResources().getColor(R.color.colorWhite));
@@ -220,11 +191,13 @@ public class MainActivity extends AppCompatActivity
 
                 fabSortPopular.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorWhite)));
                 fabSortRating.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+*/
+
                 break;
             case R.id.fab_sort_rating:
                 sortBy = NetworkUtils.SORT_RATING;
 
-                DrawableCompat.setTint(wrappedFabPopular, getResources().getColor(R.color.colorWhite));
+                /*DrawableCompat.setTint(wrappedFabPopular, getResources().getColor(R.color.colorWhite));
                 DrawableCompat.setTint(wrappedFabRating, getResources().getColor(R.color.colorAccent));
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     fabSortPopular.setBackground(wrappedFabPopular);
@@ -235,18 +208,10 @@ public class MainActivity extends AppCompatActivity
                 }
                 fabSortRating.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorWhite)));
                 fabSortPopular.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+                */
                 break;
         }
         loadMovieData(sortBy);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (!isFABOpen) {
-            super.onBackPressed();
-        } else {
-            closeFABMenu();
-        }
     }
 
     @Override

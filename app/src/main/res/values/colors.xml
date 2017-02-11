@@ -3,6 +3,8 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="colorAccentDark">#F50057</color>
+    <color name="colorAccentLight">#FF80AB</color>
     <color name="colorBlack">#424242</color>
     <color name="colorGray">#797979</color>
     <color name="colorWhite">#ffffff</color>
@@ -10,5 +12,4 @@
     <color name="pink">#FF4081</color>
     <color name="indigo">#3F51B5</color>
     <color name="lime">#CDDC39</color>
-    <color name="fab_background">#7fcccccc</color>
 </resources>

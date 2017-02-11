@@ -8,4 +8,5 @@
     <string name="error_invalid_api_key">Invalid API key: You must be granted a valid key.</string>
     <string name="best_rated">Best rated</string>
     <string name="popular">Popular</string>
+    <string name="favourite">Favourite</string>
 </resources>
