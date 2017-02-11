@@ -1,7 +1,6 @@
 package me.dawars.popularmoviesapp.ui;
 
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -9,17 +8,23 @@ import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.Fade;
+import android.transition.Slide;
+import android.transition.Transition;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -86,6 +91,18 @@ public class MainActivity extends AppCompatActivity
 
         setSupportActionBar(toolbar);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // exclude toolbar from shared element transition
+            Transition fade = new Fade();
+            fade.excludeTarget(R.id.toolbar, true);
+            fade.excludeTarget(android.R.id.statusBarBackground, true);
+            fade.excludeTarget(android.R.id.navigationBarBackground, true);
+            getWindow().setExitTransition(fade);
+            getWindow().setEnterTransition(fade);
+        }
+
+
+        // disable fab menu icon rotation
         fabMenu.setIconAnimated(false);
 
         layoutManager = new GridLayoutManager(this, 3);
@@ -161,13 +178,24 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onItemClick(int position) {
+    public void onItemClick(View v, int position) {
+        ImageView posterIv = (ImageView) v.findViewById(R.id.im_poster);
+        TextView titleTv = (TextView) v.findViewById(R.id.tv_title);
+
         Movie movie = movieAdapter.getMovie(position);
 
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra(EXTRA_MOVIE, movie);
 
-        startActivity(intent);
+        Pair<View, String> p1 = Pair.create((View) posterIv, getString(R.string.transition_poster));
+        Pair<View, String> p2 = Pair.create((View) titleTv, getString(R.string.transition_title));
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, p1, p2);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            startActivity(intent, options.toBundle());
+        } else {
+            startActivity(intent);
+        }
     }
 
     @OnClick({R.id.fab_sort_rating, R.id.fab_sort_popular})

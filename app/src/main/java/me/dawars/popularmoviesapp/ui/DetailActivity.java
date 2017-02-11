@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.util.Log;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -53,12 +53,9 @@ public class DetailActivity extends AppCompatActivity {
 
             bindData(movie);
         }
-
-        // TODO shared view transition
     }
 
     private void bindData(Movie movie) {
-
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         int width = displaymetrics.widthPixels;
@@ -66,11 +63,23 @@ public class DetailActivity extends AppCompatActivity {
         Uri backdropUri = NetworkUtils.getImageUri(movie.getBackdropPath(), width);
         Glide.with(this).load(backdropUri).into(backdropImage);
 
-        titleTextView.setText(movie.getOrigTitle());
-
         Uri posterUri = NetworkUtils.getImageUri(movie.getPosterPath(), width / 2);
         Glide.with(this).load(posterUri).into(posterImageView);
 
+        // wait for async to load
+        supportPostponeEnterTransition();
+        posterImageView.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+                    @Override
+                    public boolean onPreDraw() {
+                        posterImageView.getViewTreeObserver().removeOnPreDrawListener(this);
+                        supportStartPostponedEnterTransition();
+                        return true;
+                    }
+                }
+        );
+
+        titleTextView.setText(movie.getOrigTitle());
         overviewTextView.setText(movie.getOverview());
         ratingTextView.setRating(movie.getVoteAvg());
         releaseDateTextView.setText(movie.getReleaseDate());

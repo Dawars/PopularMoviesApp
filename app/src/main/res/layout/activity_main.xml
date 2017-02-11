@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
 
@@ -60,7 +61,6 @@
         fab:menu_labels_maxLines="-1"
         fab:menu_labels_padding="8dp"
         fab:menu_labels_paddingBottom="4dp"
-
         fab:menu_labels_paddingLeft="8dp"
         fab:menu_labels_paddingRight="8dp"
         fab:menu_labels_paddingTop="4dp"
