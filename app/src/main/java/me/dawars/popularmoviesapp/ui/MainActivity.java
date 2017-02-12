@@ -19,9 +19,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.transition.Fade;
-import android.transition.Slide;
-import android.transition.Transition;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -51,10 +48,9 @@ public class MainActivity extends AppCompatActivity
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
-    public static final String EXTRA_MOVIE = "EXTRA_MOVIE_KEY";
+    public static final String ARG_MOVIE = "MOVIE_KEY";
     private static final String MOVIES_STATUS_CODE = "status_code";
-    public static final int LOADER_MOVIE_ID = 2;
-
+    public static final int LOADER_MOVIE_ID = 1;
 
     String sortBy = NetworkUtils.SORT_POPULAR;
 
@@ -91,17 +87,6 @@ public class MainActivity extends AppCompatActivity
 
         setSupportActionBar(toolbar);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            // exclude toolbar from shared element transition
-            Transition fade = new Fade();
-            fade.excludeTarget(R.id.toolbar, true);
-            fade.excludeTarget(android.R.id.statusBarBackground, true);
-            fade.excludeTarget(android.R.id.navigationBarBackground, true);
-            getWindow().setExitTransition(fade);
-            getWindow().setEnterTransition(fade);
-        }
-
-
         // disable fab menu icon rotation
         fabMenu.setIconAnimated(false);
 
@@ -136,6 +121,7 @@ public class MainActivity extends AppCompatActivity
         Snackbar.make(coordinator, resId, Snackbar.LENGTH_SHORT).show();
     }
 
+    // FIXME orientation change column size
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -164,7 +150,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void invalidateData() {
-        movieAdapter.setMovieData(null);
+        movieAdapter.setData(null);
     }
 
     void showMovieDataView() {
@@ -184,14 +170,15 @@ public class MainActivity extends AppCompatActivity
 
         Movie movie = movieAdapter.getMovie(position);
 
-        Intent intent = new Intent(this, DetailActivity.class);
-        intent.putExtra(EXTRA_MOVIE, movie);
+        Intent intent = DetailActivity.prepareIntent(this, movie);
 
         Pair<View, String> p1 = Pair.create((View) posterIv, getString(R.string.transition_poster));
         Pair<View, String> p2 = Pair.create((View) titleTv, getString(R.string.transition_title));
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, p1, p2);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            // wait for async to load
+//            supportPostponeEnterTransition(); FIXME shared element transition
             startActivity(intent, options.toBundle());
         } else {
             startActivity(intent);
@@ -200,13 +187,14 @@ public class MainActivity extends AppCompatActivity
 
     @OnClick({R.id.fab_sort_rating, R.id.fab_sort_popular})
     public void onSortCritChange(View view) {
+        fabMenu.close(true);
         final Drawable wrappedFabPopular = DrawableCompat.wrap(fabSortPopular.getDrawable());
         final Drawable wrappedFabRating = DrawableCompat.wrap(fabSortRating.getDrawable());
         switch (view.getId()) {
             case R.id.fab_sort_popular:
                 sortBy = NetworkUtils.SORT_POPULAR;
 /*
-
+//FIXME selected fab color
                 DrawableCompat.setTint(wrappedFabPopular, getResources().getColor(R.color.colorAccent));
                 DrawableCompat.setTint(wrappedFabRating, getResources().getColor(R.color.colorWhite));
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -259,7 +247,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public List<Movie> loadInBackground() {
-                URL url = NetworkUtils.buildUrl(sortBy); // FIXME add parameter in bundle
+                URL url = NetworkUtils.buildMovieUrl(sortBy); // FIXME add parameter in bundle
 
                 String jsonResponse = null;
 
@@ -309,7 +297,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> movieData) {
-        movieAdapter.setMovieData(movieData);
+        movieAdapter.setData(movieData);
         swipreRefresh.setRefreshing(false);
 
         if (movieData != null && movieData.size() > 0) {
