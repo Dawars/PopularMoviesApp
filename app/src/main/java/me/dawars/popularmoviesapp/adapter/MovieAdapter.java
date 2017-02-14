@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import me.dawars.popularmoviesapp.R;
@@ -25,19 +26,19 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     private static final String TAG = MovieAdapter.class.getSimpleName();
 
-    private List<Movie> movieData;
+    private List<Movie> data;
 
     final private ListItemClickListener clickListener;
 
     public Movie getMovie(int position) {
-        if (position < 0 || position >= movieData.size())
+        if (position < 0 || position >= data.size())
             throw new ArrayIndexOutOfBoundsException();
 
-        return movieData.get(position);
+        return data.get(position);
     }
 
     public interface ListItemClickListener {
-        void onItemClick(int position);
+        void onItemClick(View v, int position);
     }
 
     public MovieAdapter(ListItemClickListener clickListener) {
@@ -60,19 +61,27 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     @Override
     public void onBindViewHolder(MovieViewHolder holder, int position) {
-        holder.bind(movieData.get(position));
+        holder.bind(data.get(position));
     }
 
     @Override
     public int getItemCount() {
-        if (movieData == null) {
+        if (data == null) {
             return 0;
         }
-        return movieData.size();
+        return data.size();
     }
 
-    public void setMovieData(List<Movie> movieData) {
-        this.movieData = movieData;
+    public void setData(List<Movie> data) {
+        this.data = data;
+        notifyDataSetChanged();
+    }
+
+    public void addMovieData(List<Movie> movieData) {
+        if (this.data == null) {
+            this.data = new ArrayList<>();
+        }
+        this.data.addAll(movieData);
         notifyDataSetChanged();
     }
 
@@ -99,7 +108,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
-            clickListener.onItemClick(position);
+            clickListener.onItemClick(v, position);
         }
     }
 }

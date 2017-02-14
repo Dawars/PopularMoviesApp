@@ -27,25 +27,52 @@ public class NetworkUtils {
 
 
     private static final String MOVIES_BASE_URL = "http://api.themoviedb.org/3/movie/";
+    private static final String MOVIES_REVIEWS = "reviews";
+    private static final String MOVIES_VIDEOS = "videos";
 
     public static final String SORT_POPULAR = "popular";
     public static final String SORT_RATING = "top_rated";
 
     private static final String API_PARAM = "api_key";
     private static final String PAGE_PARAM = "page";
+    private static final String APPEND_RESPONSE_PARAM = "append_to_response";
 
 
     /**
-     * Builds url for most popular/highly rated movies and
+     * Builds url for most popular/highly rated reviews
      *
-     * @param param can be SORT_POPULAR, SORT_RATING or a movie id
+     * @param param can be SORT_POPULAR, SORT_RATING
      * @return
      */
-    public static URL buildUrl(String param) {
-        Uri uri = Uri.parse(MOVIES_BASE_URL + param).buildUpon()
+    public static URL buildMovieUrl(String param) {
+        Uri uri = Uri.parse(MOVIES_BASE_URL).buildUpon()
+                .appendPath(param)
                 .appendQueryParameter(API_PARAM, MOVIES_API_KEY).build();
 
         Log.v(TAG, "Url: " + uri.toString());
+
+        URL url = null;
+        try {
+            url = new URL(uri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return url;
+    }
+
+    /**
+     * Builds url for reviews for movieId
+     *
+     * @param movieId movie id
+     * @return
+     */
+    public static URL buildDetailUrl(String movieId) {
+        Uri uri = Uri.parse(MOVIES_BASE_URL).buildUpon()
+                .appendPath(movieId)
+                .appendQueryParameter(APPEND_RESPONSE_PARAM, MOVIES_REVIEWS + "," + MOVIES_VIDEOS)
+                .appendQueryParameter(API_PARAM, MOVIES_API_KEY).build();
+
+        Log.v(TAG, "Detail Url: " + uri.toString());
 
         URL url = null;
         try {

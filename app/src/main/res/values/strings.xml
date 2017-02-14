@@ -8,4 +8,11 @@
     <string name="error_invalid_api_key">Invalid API key: You must be granted a valid key.</string>
     <string name="best_rated">Best rated</string>
     <string name="popular">Popular</string>
+    <string name="favourite">Favourite</string>
+    <string name="transition_poster" translatable="false">poster</string>
+    <string name="transition_title" translatable="false">title</string>
+    <string name="reviews">Reviews</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

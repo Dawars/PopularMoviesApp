@@ -1,19 +1,19 @@
 package me.dawars.popularmoviesapp.ui;
 
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -21,8 +21,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -45,10 +48,9 @@ public class MainActivity extends AppCompatActivity
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
-    public static final String EXTRA_MOVIE = "EXTRA_MOVIE_KEY";
+    public static final String ARG_MOVIE = "MOVIE_KEY";
     private static final String MOVIES_STATUS_CODE = "status_code";
-    public static final int LOADER_MOVIE_ID = 2;
-
+    public static final int LOADER_MOVIE_ID = 1;
 
     String sortBy = NetworkUtils.SORT_POPULAR;
 
@@ -64,8 +66,8 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    @BindView(R.id.fab_sort)
-    FloatingActionButton fabSort;
+    @BindView(R.id.menu)
+    FloatingActionMenu fabMenu;
     @BindView(R.id.fab_sort_popular)
     FloatingActionButton fabSortPopular;
     @BindView(R.id.fab_sort_rating)
@@ -77,8 +79,6 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout swipreRefresh;
 
-    private boolean isFABOpen = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +86,9 @@ public class MainActivity extends AppCompatActivity
         ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
+
+        // disable fab menu icon rotation
+        fabMenu.setIconAnimated(false);
 
         layoutManager = new GridLayoutManager(this, 3);
 
@@ -115,9 +118,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void snackbar(@StringRes int resId) {
-        Snackbar.make(fabSort, resId, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(coordinator, resId, Snackbar.LENGTH_SHORT).show();
     }
 
+    // FIXME orientation change column size
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -146,7 +150,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void invalidateData() {
-        movieAdapter.setMovieData(null);
+        movieAdapter.setData(null);
     }
 
     void showMovieDataView() {
@@ -160,54 +164,37 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onItemClick(int position) {
+    public void onItemClick(View v, int position) {
+        ImageView posterIv = (ImageView) v.findViewById(R.id.im_poster);
+        TextView titleTv = (TextView) v.findViewById(R.id.tv_title);
+
         Movie movie = movieAdapter.getMovie(position);
 
-        Intent intent = new Intent(this, DetailActivity.class);
-        intent.putExtra(EXTRA_MOVIE, movie);
+        Intent intent = DetailActivity.prepareIntent(this, movie);
 
-        startActivity(intent);
-    }
+        Pair<View, String> p1 = Pair.create((View) posterIv, getString(R.string.transition_poster));
+        Pair<View, String> p2 = Pair.create((View) titleTv, getString(R.string.transition_title));
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, p1, p2);
 
-    @OnClick(R.id.fab_sort)
-    public void onFabClick(View view) {
-        if (!isFABOpen) {
-            showFABMenu();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            // wait for async to load
+//            supportPostponeEnterTransition(); FIXME shared element transition
+            startActivity(intent, options.toBundle());
         } else {
-            closeFABMenu();
+            startActivity(intent);
         }
-    }
-
-    private void showFABMenu() {
-        fabSort.setImageResource(R.drawable.close);
-
-        isFABOpen = true;
-        fabSortRating.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
-        fabSortPopular.animate().translationY(-getResources().getDimension(R.dimen.standard_105));
-    }
-
-    private void closeFABMenu() {
-        fabSort.setImageResource(R.drawable.sort);
-/*
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ViewAnimationUtils.createCircularReveal(coordinator,
-                    coordinator.getWidth(), coordinator.getHeight(),
-                    (int) Math.hypot(coordinator.getWidth(), coordinator.getHeight()), 0).start();
-        }
-*/
-        isFABOpen = false;
-        fabSortRating.animate().translationY(0);
-        fabSortPopular.animate().translationY(0);
     }
 
     @OnClick({R.id.fab_sort_rating, R.id.fab_sort_popular})
     public void onSortCritChange(View view) {
+        fabMenu.close(true);
         final Drawable wrappedFabPopular = DrawableCompat.wrap(fabSortPopular.getDrawable());
         final Drawable wrappedFabRating = DrawableCompat.wrap(fabSortRating.getDrawable());
         switch (view.getId()) {
             case R.id.fab_sort_popular:
                 sortBy = NetworkUtils.SORT_POPULAR;
-
+/*
+//FIXME selected fab color
                 DrawableCompat.setTint(wrappedFabPopular, getResources().getColor(R.color.colorAccent));
                 DrawableCompat.setTint(wrappedFabRating, getResources().getColor(R.color.colorWhite));
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -220,11 +207,13 @@ public class MainActivity extends AppCompatActivity
 
                 fabSortPopular.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorWhite)));
                 fabSortRating.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+*/
+
                 break;
             case R.id.fab_sort_rating:
                 sortBy = NetworkUtils.SORT_RATING;
 
-                DrawableCompat.setTint(wrappedFabPopular, getResources().getColor(R.color.colorWhite));
+                /*DrawableCompat.setTint(wrappedFabPopular, getResources().getColor(R.color.colorWhite));
                 DrawableCompat.setTint(wrappedFabRating, getResources().getColor(R.color.colorAccent));
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     fabSortPopular.setBackground(wrappedFabPopular);
@@ -235,18 +224,10 @@ public class MainActivity extends AppCompatActivity
                 }
                 fabSortRating.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorWhite)));
                 fabSortPopular.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+                */
                 break;
         }
         loadMovieData(sortBy);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (!isFABOpen) {
-            super.onBackPressed();
-        } else {
-            closeFABMenu();
-        }
     }
 
     @Override
@@ -266,7 +247,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public List<Movie> loadInBackground() {
-                URL url = NetworkUtils.buildUrl(sortBy); // FIXME add parameter in bundle
+                URL url = NetworkUtils.buildMovieUrl(sortBy); // FIXME add parameter in bundle
 
                 String jsonResponse = null;
 
@@ -316,7 +297,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> movieData) {
-        movieAdapter.setMovieData(movieData);
+        movieAdapter.setData(movieData);
         swipreRefresh.setRefreshing(false);
 
         if (movieData != null && movieData.size() > 0) {
