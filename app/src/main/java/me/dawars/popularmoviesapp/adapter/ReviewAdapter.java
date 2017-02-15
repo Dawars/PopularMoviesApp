@@ -22,7 +22,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
 
     private List<Review> reviewData;
 
-    final private ListItemClickListener clickListener;
+    private ListItemClickListener clickListener;
 
     public Review getReview(int position) {
         if (position < 0 || position >= reviewData.size())
@@ -35,10 +35,8 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         void onItemClick(View v, int position);
     }
 
-    public ReviewAdapter(ListItemClickListener clickListener) {
-
+    public void setOnClickListener(ListItemClickListener clickListener) {
         this.clickListener = clickListener;
-
     }
 
     @Override
@@ -92,7 +90,9 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
-            clickListener.onItemClick(v, position);
+            if (clickListener != null) {
+                clickListener.onItemClick(v, position);
+            }
         }
     }
 }

@@ -57,7 +57,7 @@ public class Movie implements Parcelable {
     float voteAvg;
 
 
-    public static final class Response {
+    public static final class Result {
 
         @SerializedName("page")
         public int page;

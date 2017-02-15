@@ -279,7 +279,7 @@ public class MainActivity extends AppCompatActivity
                     return null;
                 }
 
-                Movie.Response response = new Gson().fromJson(jsonResponse, Movie.Response.class);
+                Movie.Result response = new Gson().fromJson(jsonResponse, Movie.Result.class);
 
                 if (response == null) {
                     return null;

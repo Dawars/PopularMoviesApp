@@ -108,7 +108,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
-            clickListener.onItemClick(v, position);
+            if (clickListener != null) {
+                clickListener.onItemClick(v, position);
+            }
         }
     }
 }

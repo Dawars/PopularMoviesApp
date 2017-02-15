@@ -1,11 +1,13 @@
 package me.dawars.popularmoviesapp.ui;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +20,12 @@ import com.bumptech.glide.Glide;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.dawars.popularmoviesapp.R;
+import me.dawars.popularmoviesapp.adapter.ListItemClickListener;
 import me.dawars.popularmoviesapp.adapter.ReviewAdapter;
+import me.dawars.popularmoviesapp.adapter.VideoAdapter;
 import me.dawars.popularmoviesapp.data.Movie;
-import me.dawars.popularmoviesapp.data.loader.ReviewLoader;
+import me.dawars.popularmoviesapp.data.Video;
+import me.dawars.popularmoviesapp.data.loader.MovieDetailLoader;
 import me.dawars.popularmoviesapp.utils.DisplayUtils;
 import me.dawars.popularmoviesapp.utils.NetworkUtils;
 
@@ -29,13 +34,18 @@ import me.dawars.popularmoviesapp.utils.NetworkUtils;
  * Use the {@link DetailFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DetailFragment extends Fragment implements ReviewAdapter.ListItemClickListener {
+public class DetailFragment extends Fragment {
+    private static final String TAG = DetailFragment.class.getSimpleName();
+
     private static final int LOADER_MOVIE_DETAIL_ID = 2;
+
     private Movie movie;
 
-    private ReviewLoader reviewLoader;
+    private MovieDetailLoader reviewLoader;
     private ReviewAdapter reviewAdapter;
-    private LinearLayoutManager layoutManager;
+    private VideoAdapter videoAdapter;
+    private LinearLayoutManager reviewsLayoutManager;
+    private LinearLayoutManager videosLayoutManager;
 
 
     @BindView(R.id.tv_title)
@@ -51,6 +61,9 @@ public class DetailFragment extends Fragment implements ReviewAdapter.ListItemCl
 
     @BindView(R.id.reviews_list)
     RecyclerView reviewsList;
+
+    @BindView(R.id.videos_list)
+    RecyclerView videosList;
 
     public DetailFragment() {
         // Required empty public constructor
@@ -82,7 +95,7 @@ public class DetailFragment extends Fragment implements ReviewAdapter.ListItemCl
 
         LoaderManager loaderManager = getActivity().getSupportLoaderManager();
         Bundle bundle = new Bundle();
-        bundle.putString(ReviewLoader.MOVIE_ID_KEY, String.valueOf(movie.getId()));
+        bundle.putString(MovieDetailLoader.MOVIE_ID_KEY, String.valueOf(movie.getId()));
         loaderManager.initLoader(LOADER_MOVIE_DETAIL_ID, bundle, reviewLoader);
 
     }
@@ -100,14 +113,30 @@ public class DetailFragment extends Fragment implements ReviewAdapter.ListItemCl
         ButterKnife.bind(this, rootView);
 
 
-        reviewAdapter = new ReviewAdapter(this);
+        reviewAdapter = new ReviewAdapter();
+        videoAdapter = new VideoAdapter();
 
-        reviewLoader = new ReviewLoader(getContext(), reviewAdapter);
-        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        reviewLoader = new MovieDetailLoader(getContext(), reviewAdapter, videoAdapter);
+        reviewsLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        videosLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
 
         reviewsList.setAdapter(reviewAdapter);
-        reviewsList.setLayoutManager(layoutManager);
+        reviewsList.setLayoutManager(reviewsLayoutManager);
 
+        videosList.setAdapter(videoAdapter);
+        videosList.setLayoutManager(videosLayoutManager);
+        videoAdapter.setOnClickListener(new ListItemClickListener() {
+            @Override
+            public void onItemClick(View v, int position) {
+                Video video = videoAdapter.getVideo(position);
+                if (video.getSite().equals("YouTube")) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse("http://www.youtube.com/watch?v=" + video.getKey()));
+                    startActivity(intent);
+                }
+                Log.i(TAG, "Not a youtube video");
+            }
+        });
         bindData(movie);
         return rootView;
     }
@@ -124,14 +153,9 @@ public class DetailFragment extends Fragment implements ReviewAdapter.ListItemCl
         Uri posterUri = NetworkUtils.getImageUri(movie.getPosterPath(), width);
         Glide.with(this).load(posterUri).into(posterImageView);
 
-        titleTextView.setText(movie.getOrigTitle());
+        titleTextView.setText(movie.getTitle());
         overviewTextView.setText(movie.getOverview());
         ratingTextView.setRating(movie.getVoteAvg());
         releaseDateTextView.setText(movie.getReleaseDate());
-    }
-
-    @Override
-    public void onItemClick(View v, int position) {
-
     }
 }
