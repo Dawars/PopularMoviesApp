@@ -3,6 +3,7 @@ package me.dawars.popularmoviesapp.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,6 +25,8 @@ import me.dawars.popularmoviesapp.adapter.ListItemClickListener;
 import me.dawars.popularmoviesapp.adapter.ReviewAdapter;
 import me.dawars.popularmoviesapp.adapter.VideoAdapter;
 import me.dawars.popularmoviesapp.data.Movie;
+import me.dawars.popularmoviesapp.data.MovieDetail;
+import me.dawars.popularmoviesapp.data.Review;
 import me.dawars.popularmoviesapp.data.Video;
 import me.dawars.popularmoviesapp.data.loader.MovieDetailLoader;
 import me.dawars.popularmoviesapp.utils.DisplayUtils;
@@ -38,8 +41,11 @@ public class DetailFragment extends Fragment {
     private static final String TAG = DetailFragment.class.getSimpleName();
 
     private static final int LOADER_MOVIE_DETAIL_ID = 2;
+    private static final String MOVIE_VIDEOS_KEY = "VIDEOS_KEY";
+    private static final String MOVIE_REVIEWS_KEY = "REVIEWS_KEY";
 
     private Movie movie;
+    private MovieDetail movieDetail;
 
     private MovieDetailLoader reviewLoader;
     private ReviewAdapter reviewAdapter;
@@ -140,12 +146,25 @@ public class DetailFragment extends Fragment {
         bindData(movie);
         return rootView;
     }
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        // FIXME fix rotation
         super.onSaveInstanceState(outState);
+        if (videoAdapter.getItemCount() != 0) {
+            outState.putParcelableArrayList(MOVIE_VIDEOS_KEY, videoAdapter.getVideos());
+        }
+        if (reviewAdapter.getItemCount() != 0) {
+            outState.putParcelableArrayList(MOVIE_REVIEWS_KEY, reviewAdapter.getReviews());
+        }
+    }
 
-        // TODO implement onsaveinstance
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            videoAdapter.setVideoData(savedInstanceState.<Video>getParcelableArrayList(MOVIE_VIDEOS_KEY));
+            reviewAdapter.setReviewData(savedInstanceState.<Review>getParcelableArrayList(MOVIE_REVIEWS_KEY));
+        }
     }
 
     private void bindData(Movie movie) {

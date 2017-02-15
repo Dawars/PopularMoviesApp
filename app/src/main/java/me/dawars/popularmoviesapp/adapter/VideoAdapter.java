@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import me.dawars.popularmoviesapp.R;
 import me.dawars.popularmoviesapp.data.Video;
@@ -23,7 +23,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
 
     private static final String TAG = VideoAdapter.class.getSimpleName();
 
-    private List<Video> videoData;
+    private ArrayList<Video> videoData;
 
     private ListItemClickListener clickListener;
 
@@ -36,6 +36,10 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
 
     public void setOnClickListener(ListItemClickListener clickListener) {
         this.clickListener = clickListener;
+    }
+
+    public ArrayList<Video> getVideos() {
+        return videoData;
     }
 
     @Override
@@ -63,7 +67,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         return videoData.size();
     }
 
-    public void setVideoData(List<Video> videoData) {
+    public void setVideoData(ArrayList<Video> videoData) {
         this.videoData = videoData;
         notifyDataSetChanged();
     }
@@ -93,6 +97,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             int position = getAdapterPosition();
             if (clickListener != null) {
                 clickListener.onItemClick(v, position);
-            }        }
+            }
+        }
     }
 }

@@ -69,7 +69,7 @@ public class Movie implements Parcelable {
         public int totalMovies;
 
         @SerializedName("results")
-        public List<Movie> movies = new ArrayList<>();
+        public ArrayList<Movie> movies = new ArrayList<>();
     }
 
     public Movie(int id,

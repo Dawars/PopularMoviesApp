@@ -96,7 +96,7 @@ public class Video implements Parcelable{
 
     public static final class Result {
         @SerializedName("results")
-        public List<Video> videos = new ArrayList<>();
+        public ArrayList<Video> videos = new ArrayList<>();
     }
 
 }
