@@ -1,5 +1,6 @@
 package me.dawars.popularmoviesapp.ui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
@@ -92,6 +93,14 @@ public class MainActivity extends AppCompatActivity
 
         layoutManager = new GridLayoutManager(this, 3);
 
+        // change span count based on orientation
+        int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            layoutManager.setSpanCount(5);
+        } else if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            layoutManager.setSpanCount(3);
+        }
+
         movieAdapter = new MovieAdapter(this, this);
         recyclerView.setAdapter(movieAdapter);
         recyclerView.setHasFixedSize(true);
@@ -119,21 +128,6 @@ public class MainActivity extends AppCompatActivity
 
     private void snackbar(@StringRes int resId) {
         Snackbar.make(coordinator, resId, Snackbar.LENGTH_SHORT).show();
-    }
-
-    // FIXME orientation change column size
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-
-        Log.v(TAG, "onConfigurationChanged");
-
-        // change span count based on orientation
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            layoutManager.setSpanCount(5);
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            layoutManager.setSpanCount(3);
-        }
     }
 
     private void loadMovieData(String sortBy) {
@@ -178,7 +172,7 @@ public class MainActivity extends AppCompatActivity
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             // wait for async to load
-            supportPostponeEnterTransition(); //FIXME shared element transition postpone
+//            supportPostponeEnterTransition(); //FIXME shared element transition postpone
             startActivity(intent, options.toBundle());
         } else {
             startActivity(intent);

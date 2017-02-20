@@ -104,8 +104,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
         public void bind(Movie record) {
 
-            int width = DisplayUtils.getScreenMetrics(activity).widthPixels / 3;
-            Uri posterUri = NetworkUtils.getImageUri(record.getPosterPath(), width);
+            Uri posterUri = NetworkUtils.getImageUri(record.getPosterPath(), activity);
             Glide.with(posterImageView.getContext()).load(posterUri).into(posterImageView);
             // TODO: add error and loading image
             titleTextView.setText(record.getTitle());
