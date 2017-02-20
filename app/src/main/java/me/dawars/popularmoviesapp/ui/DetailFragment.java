@@ -8,10 +8,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -143,9 +145,12 @@ public class DetailFragment extends Fragment {
                 Log.i(TAG, "Not a youtube video");
             }
         });
+
         bindData(movie);
+
         return rootView;
     }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         // FIXME fix rotation
@@ -171,6 +176,17 @@ public class DetailFragment extends Fragment {
         int width = DisplayUtils.getScreenMetrics(getActivity()).widthPixels / 2;
         Uri posterUri = NetworkUtils.getImageUri(movie.getPosterPath(), width);
         Glide.with(this).load(posterUri).into(posterImageView);
+
+        posterImageView.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+                    @Override
+                    public boolean onPreDraw() {
+                        posterImageView.getViewTreeObserver().removeOnPreDrawListener(this);
+                        getActivity().supportStartPostponedEnterTransition();
+                        return true;
+                    }
+                }
+        );
 
         titleTextView.setText(movie.getTitle());
         overviewTextView.setText(movie.getOverview());

@@ -92,12 +92,12 @@ public class MainActivity extends AppCompatActivity
 
         layoutManager = new GridLayoutManager(this, 3);
 
-        movieAdapter = new MovieAdapter(this);
+        movieAdapter = new MovieAdapter(this, this);
         recyclerView.setAdapter(movieAdapter);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
-        swipreRefresh.setColorSchemeResources(R.color.pink, R.color.indigo, R.color.lime);
+        swipreRefresh.setColorSchemeResources(R.color.loader1, R.color.loader2, R.color.loader3);
         swipreRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -178,7 +178,7 @@ public class MainActivity extends AppCompatActivity
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             // wait for async to load
-//            supportPostponeEnterTransition(); FIXME shared element transition
+            supportPostponeEnterTransition(); //FIXME shared element transition postpone
             startActivity(intent, options.toBundle());
         } else {
             startActivity(intent);
