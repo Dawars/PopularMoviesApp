@@ -24,6 +24,12 @@
         <activity
             android:name=".ui.DetailActivity"
             android:theme="@style/AppTheme.NoActionBar.Transparent" />
+
+        <provider
+            android:name=".data.MovieContentProvider"
+            android:authorities="me.dawars.popularmovies"
+            android:exported="false" />
     </application>
+
 
 </manifest>
