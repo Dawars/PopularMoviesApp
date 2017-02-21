@@ -2,10 +2,12 @@ package me.dawars.popularmoviesapp.ui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
 import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity
     public static final String ARG_MOVIE = "MOVIE_KEY";
     private static final String MOVIES_STATUS_CODE = "status_code";
     public static final int LOADER_MOVIE_ID = 1;
+    public static final int LOADER_FAVOURITES_ID = 2;
 
     String sortBy = NetworkUtils.SORT_POPULAR;
 
@@ -73,6 +76,8 @@ public class MainActivity extends AppCompatActivity
     FloatingActionButton fabSortPopular;
     @BindView(R.id.fab_sort_rating)
     FloatingActionButton fabSortRating;
+    @BindView(R.id.fab_sort_favourites)
+    FloatingActionButton fabSortFavourite;
 
     @BindView(R.id.coordinator)
     CoordinatorLayout coordinator;
@@ -111,7 +116,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onRefresh() {
                 Log.v(TAG, "refreshing");
-                loadMovieData(sortBy);
+                loadMovieData();
             }
         });
 
@@ -124,13 +129,16 @@ public class MainActivity extends AppCompatActivity
             swipreRefresh.setRefreshing(false);
             snackbar(R.string.no_network);
         }
+
+        setFabColor(fabSortPopular, R.color.colorAccentDark, R.color.colorAccent);
+
     }
 
     private void snackbar(@StringRes int resId) {
         Snackbar.make(coordinator, resId, Snackbar.LENGTH_SHORT).show();
     }
 
-    private void loadMovieData(String sortBy) {
+    private void loadMovieData() {
         swipreRefresh.setRefreshing(true);
         if (NetworkUtils.isNetworkAvailable(this)) {
             invalidateData();
@@ -179,49 +187,46 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @OnClick({R.id.fab_sort_rating, R.id.fab_sort_popular})
+    private void setFabColor(View fabView, @ColorRes int bgColor, @ColorRes int rippleColor) {
+        if (fabView instanceof FloatingActionButton) {
+            FloatingActionButton fab = (FloatingActionButton) fabView;
+
+//            final Drawable wrappedFab = DrawableCompat.wrap(fab.getDrawable());
+
+            fab.setColorNormalResId(bgColor);
+            fab.setColorPressedResId(rippleColor);
+            fab.setColorRippleResId(rippleColor);
+
+        }
+    }
+
+    @OnClick({R.id.fab_sort_rating, R.id.fab_sort_popular, R.id.fab_sort_favourites})
     public void onSortCritChange(View view) {
         fabMenu.close(true);
-        final Drawable wrappedFabPopular = DrawableCompat.wrap(fabSortPopular.getDrawable());
-        final Drawable wrappedFabRating = DrawableCompat.wrap(fabSortRating.getDrawable());
         switch (view.getId()) {
             case R.id.fab_sort_popular:
                 sortBy = NetworkUtils.SORT_POPULAR;
-/*
-//FIXME selected fab color
-                DrawableCompat.setTint(wrappedFabPopular, getResources().getColor(R.color.colorAccent));
-                DrawableCompat.setTint(wrappedFabRating, getResources().getColor(R.color.colorWhite));
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    fabSortPopular.setBackground(wrappedFabPopular);
-                    fabSortRating.setBackground(wrappedFabRating);
-                } else {
-                    fabSortPopular.setBackgroundDrawable(wrappedFabPopular);
-                    fabSortRating.setBackgroundDrawable(wrappedFabRating);
-                }
 
-                fabSortPopular.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorWhite)));
-                fabSortRating.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
-*/
+                setFabColor(fabSortPopular, R.color.colorAccentDark, R.color.colorAccent);
+                setFabColor(fabSortRating, R.color.colorPrimary, R.color.colorPrimaryDark);
+                setFabColor(fabSortFavourite, R.color.colorPrimary, R.color.colorPrimaryDark);
 
                 break;
             case R.id.fab_sort_rating:
                 sortBy = NetworkUtils.SORT_RATING;
 
-                /*DrawableCompat.setTint(wrappedFabPopular, getResources().getColor(R.color.colorWhite));
-                DrawableCompat.setTint(wrappedFabRating, getResources().getColor(R.color.colorAccent));
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    fabSortPopular.setBackground(wrappedFabPopular);
-                    fabSortRating.setBackground(wrappedFabRating);
-                } else {
-                    fabSortPopular.setBackgroundDrawable(wrappedFabPopular);
-                    fabSortRating.setBackgroundDrawable(wrappedFabRating);
-                }
-                fabSortRating.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorWhite)));
-                fabSortPopular.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
-                */
+                setFabColor(fabSortRating, R.color.colorAccentDark, R.color.colorAccent);
+                setFabColor(fabSortPopular, R.color.colorPrimary, R.color.colorPrimaryDark);
+                setFabColor(fabSortFavourite, R.color.colorPrimary, R.color.colorPrimaryDark);
                 break;
+            case R.id.fab_sort_favourites:
+
+                sortBy = NetworkUtils.SORT_FAVOURITE;
+                setFabColor(fabSortRating, R.color.colorPrimary, R.color.colorPrimaryDark);
+                setFabColor(fabSortPopular, R.color.colorPrimary, R.color.colorPrimaryDark);
+                setFabColor(fabSortFavourite, R.color.colorAccentDark, R.color.colorAccent);
         }
-        loadMovieData(sortBy);
+        loadMovieData();
     }
 
     @Override
@@ -231,7 +236,9 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             protected void onStartLoading() {
+                Log.i(TAG, "Loader started loading");
                 if (movieData != null) {
+                    Log.i(TAG, "Data already present");
                     deliverResult(movieData);
                 } else {
 //                    loadingIndicator.setVisibility(View.VISIBLE);
@@ -278,11 +285,15 @@ public class MainActivity extends AppCompatActivity
                 if (response == null) {
                     return null;
                 }
+                Log.i(TAG, "Load in bg");
+
                 return response.movies;
             }
 
             @Override
             public void deliverResult(List<Movie> data) {
+                Log.i(TAG, "Loader deliver res");
+
                 movieData = data;
                 super.deliverResult(data);
             }

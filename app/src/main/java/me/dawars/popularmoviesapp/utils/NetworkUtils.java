@@ -34,6 +34,7 @@ public class NetworkUtils {
 
     public static final String SORT_POPULAR = "popular";
     public static final String SORT_RATING = "top_rated";
+    public static final String SORT_FAVOURITE = "favourite"; // only for cursor loader
 
     private static final String API_PARAM = "api_key";
     private static final String PAGE_PARAM = "page";
@@ -141,7 +142,7 @@ public class NetworkUtils {
         } else {
             networkStatus = NONE;
         }
-        Log.i(TAG, networkStatus + "");
+
         return networkStatus;
     }
 
@@ -183,7 +184,7 @@ public class NetworkUtils {
         //"w92", "w154", "w185", "w342", "w500", "w780"
         int width;
 
-        width = DisplayUtils.getScreenMetrics(activity).widthPixels;
+        width = DisplayUtils.getScreenMetrics(activity).widthPixels / 3;
         if (checkNetworkStatus(activity) != WIFI) {
             width = Math.min(154, width);
         }
