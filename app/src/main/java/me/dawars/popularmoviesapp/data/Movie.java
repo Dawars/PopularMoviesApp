@@ -57,7 +57,7 @@ public class Movie implements Parcelable {
     float voteAvg;
 
 
-    public static final class Response {
+    public static final class Result {
 
         @SerializedName("page")
         public int page;
@@ -69,7 +69,7 @@ public class Movie implements Parcelable {
         public int totalMovies;
 
         @SerializedName("results")
-        public List<Movie> movies = new ArrayList<>();
+        public ArrayList<Movie> movies = new ArrayList<>();
     }
 
     public Movie(int id,

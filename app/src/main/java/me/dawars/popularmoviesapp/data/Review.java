@@ -46,7 +46,7 @@ public class Review implements Parcelable {
         public int totalResults;
 
         @SerializedName("results")
-        public List<Review> reviews = new ArrayList<>();
+        public ArrayList<Review> reviews = new ArrayList<>();
     }
 
     public String getId() {

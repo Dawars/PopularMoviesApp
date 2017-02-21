@@ -57,17 +57,6 @@ public class DetailActivity extends AppCompatActivity {
             Log.v(TAG, "backdrop " + backdropUri.toString());
             Glide.with(this).load(backdropUri).into(backdropImage);
             // TODO add caching
-/*
-            backdropImage.getViewTreeObserver().addOnPreDrawListener(
-                    new ViewTreeObserver.OnPreDrawListener() {
-                        @Override
-                        public boolean onPreDraw() {
-                            backdropImage.getViewTreeObserver().removeOnPreDrawListener(this);
-                            supportStartPostponedEnterTransition();
-                            return true;
-                        }
-                    }
-            );*/
         }
     }
 

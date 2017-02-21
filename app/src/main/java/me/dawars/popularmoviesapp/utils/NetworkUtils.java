@@ -1,10 +1,12 @@
 package me.dawars.popularmoviesapp.utils;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.support.annotation.IntDef;
 import android.util.Log;
 
 import java.io.IOException;
@@ -107,6 +109,42 @@ public class NetworkUtils {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
+    public static final int WIFI = 0;
+    public static final int DATA = 1;
+    public static final int NONE = 2;
+
+    //    @IntDef({WIFI, DATA, NONE}) not for method return values
+
+    /**
+     * Checks the type of network connection
+     * @param context
+     * @return
+     */
+    public static int checkNetworkStatus(final Context context) {
+
+        int networkStatus;
+
+        // Get connect mangaer
+        final ConnectivityManager connMgr = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        // check for wifi
+        final android.net.NetworkInfo wifi = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+        // check for mobile data
+        final android.net.NetworkInfo mobile = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+        if (wifi.isConnected()) {
+            networkStatus = WIFI;
+        } else if (mobile.isConnected()) {
+            networkStatus = DATA;
+        } else {
+            networkStatus = NONE;
+        }
+        Log.i(TAG, networkStatus + "");
+        return networkStatus;
+    }
+
     /**
      * Get poster url in appropriate size
      *
@@ -130,6 +168,43 @@ public class NetworkUtils {
         } else {
             w = "w780";
         }
-        return Uri.parse("http://image.tmdb.org/t/p/" + w + "/" + posterUrl);
+        String url = "http://image.tmdb.org/t/p/" + w + "/" + posterUrl;
+        Log.i(TAG, url);
+        return Uri.parse(url);
+    }
+
+    /**
+     * Gives the image url with optimal image size, if mobile data is used gives a small image
+     * @param posterUrl
+     * @param activity
+     * @return
+     */
+    public static Uri getImageUri(String posterUrl, Activity activity) {
+        //"w92", "w154", "w185", "w342", "w500", "w780"
+        int width;
+
+        width = DisplayUtils.getScreenMetrics(activity).widthPixels;
+        if (checkNetworkStatus(activity) != WIFI) {
+            width = Math.min(154, width);
+        }
+
+        String w;
+
+        if (width <= 92) {
+            w = "w92";
+        } else if (width <= 154) {
+            w = "w154";
+        } else if (width <= 185) {
+            w = "w185";
+        } else if (width <= 342) {
+            w = "w342";
+        } else if (width <= 500) {
+            w = "w500";
+        } else {
+            w = "w780";
+        }
+        String url = "http://image.tmdb.org/t/p/" + w + "/" + posterUrl;
+        Log.i(TAG, url);
+        return Uri.parse(url);
     }
 }

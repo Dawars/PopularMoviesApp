@@ -1,12 +1,15 @@
 package me.dawars.popularmoviesapp.adapter;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
+import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import me.dawars.popularmoviesapp.R;
@@ -20,9 +23,9 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
 
     private static final String TAG = ReviewAdapter.class.getSimpleName();
 
-    private List<Review> reviewData;
+    private ArrayList<Review> reviewData;
 
-    final private ListItemClickListener clickListener;
+    private ListItemClickListener clickListener;
 
     public Review getReview(int position) {
         if (position < 0 || position >= reviewData.size())
@@ -31,14 +34,16 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         return reviewData.get(position);
     }
 
+    public ArrayList<Review> getReviews() {
+        return reviewData;
+    }
+
     public interface ListItemClickListener {
         void onItemClick(View v, int position);
     }
 
-    public ReviewAdapter(ListItemClickListener clickListener) {
-
+    public void setOnClickListener(ListItemClickListener clickListener) {
         this.clickListener = clickListener;
-
     }
 
     @Override
@@ -66,7 +71,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         return reviewData.size();
     }
 
-    public void setReviewData(List<Review> reviewData) {
+    public void setReviewData(ArrayList<Review> reviewData) {
         this.reviewData = reviewData;
         notifyDataSetChanged();
     }
@@ -92,7 +97,9 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
-            clickListener.onItemClick(v, position);
+            if (clickListener != null) {
+                clickListener.onItemClick(v, position);
+            }
         }
     }
 }

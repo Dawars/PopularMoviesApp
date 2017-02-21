@@ -13,17 +13,17 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 
 import me.dawars.popularmoviesapp.adapter.ReviewAdapter;
-import me.dawars.popularmoviesapp.data.Review;
+import me.dawars.popularmoviesapp.adapter.VideoAdapter;
+import me.dawars.popularmoviesapp.data.MovieDetail;
 import me.dawars.popularmoviesapp.utils.NetworkUtils;
 
 /**
  * Created by dawars on 2/12/17.
  */
 
-public class ReviewLoader implements LoaderManager.LoaderCallbacks<List<Review>> {
+public class MovieDetailLoader implements LoaderManager.LoaderCallbacks<MovieDetail> {
 
     private static final String STATUS_CODE = "status_code";
 
@@ -31,22 +31,24 @@ public class ReviewLoader implements LoaderManager.LoaderCallbacks<List<Review>>
 
 
     private final Context context;
-    private final ReviewAdapter adapter;
+    private final ReviewAdapter reviewAdapter;
+    private final VideoAdapter videoAdapter;
 
-    public ReviewLoader(Context context, ReviewAdapter adapter) {
+    public MovieDetailLoader(Context context, ReviewAdapter reviewAdapter, VideoAdapter videoAdapter) {
         this.context = context;
-        this.adapter = adapter;
+        this.reviewAdapter = reviewAdapter;
+        this.videoAdapter = videoAdapter;
     }
 
     @Override
-    public Loader<List<Review>> onCreateLoader(int id, final Bundle args) {
-        return new AsyncTaskLoader<List<Review>>(context) {
-            public List<Review> reviewData;
+    public Loader<MovieDetail> onCreateLoader(int id, final Bundle args) {
+        return new AsyncTaskLoader<MovieDetail>(context) {
+            public MovieDetail data;
 
             @Override
             protected void onStartLoading() {
-                if (reviewData != null) {
-                    deliverResult(reviewData);
+                if (data != null) {
+                    deliverResult(data);
                 } else {
 //                    loadingIndicator.setVisibility(View.VISIBLE);
                     forceLoad();
@@ -54,7 +56,7 @@ public class ReviewLoader implements LoaderManager.LoaderCallbacks<List<Review>>
             }
 
             @Override
-            public List<Review> loadInBackground() {
+            public MovieDetail loadInBackground() {
                 String id = args.getString(MOVIE_ID_KEY);
                 URL url = NetworkUtils.buildDetailUrl(id);
 
@@ -88,25 +90,26 @@ public class ReviewLoader implements LoaderManager.LoaderCallbacks<List<Review>>
                     return null;
                 }
 
-                Review.Result response = new Gson().fromJson(jsonResponse, Review.Result.class);
+                MovieDetail response = new Gson().fromJson(jsonResponse, MovieDetail.class);
 
                 if (response == null) {
                     return null;
                 }
-                return response.reviews;
+                return response;
             }
 
             @Override
-            public void deliverResult(List<Review> data) {
-                reviewData = data;
+            public void deliverResult(MovieDetail data) {
+                this.data = data;
                 super.deliverResult(data);
             }
         };
     }
 
     @Override
-    public void onLoadFinished(Loader<List<Review>> loader, List<Review> review) {
-        adapter.setReviewData(review);
+    public void onLoadFinished(Loader<MovieDetail> loader, MovieDetail data) {
+        reviewAdapter.setReviewData(data.reviews.reviews);
+        videoAdapter.setVideoData(data.videos.videos);
 //        swipreRefresh.setRefreshing(false);
 
 //        if (review != null && review.size() > 0) {
@@ -117,7 +120,7 @@ public class ReviewLoader implements LoaderManager.LoaderCallbacks<List<Review>>
     }
 
     @Override
-    public void onLoaderReset(Loader<List<Review>> loader) {
+    public void onLoaderReset(Loader<MovieDetail> loader) {
     }
 }
 

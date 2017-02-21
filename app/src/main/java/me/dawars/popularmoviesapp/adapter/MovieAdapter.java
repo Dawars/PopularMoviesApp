@@ -1,5 +1,6 @@
 package me.dawars.popularmoviesapp.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +17,7 @@ import java.util.List;
 
 import me.dawars.popularmoviesapp.R;
 import me.dawars.popularmoviesapp.data.Movie;
+import me.dawars.popularmoviesapp.utils.DisplayUtils;
 import me.dawars.popularmoviesapp.utils.NetworkUtils;
 
 /**
@@ -29,6 +31,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     private List<Movie> data;
 
     final private ListItemClickListener clickListener;
+    private Activity activity;
 
     public Movie getMovie(int position) {
         if (position < 0 || position >= data.size())
@@ -41,7 +44,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         void onItemClick(View v, int position);
     }
 
-    public MovieAdapter(ListItemClickListener clickListener) {
+    public MovieAdapter(Activity activity, ListItemClickListener clickListener) {
+        this.activity = activity;
 
         this.clickListener = clickListener;
 
@@ -99,7 +103,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         }
 
         public void bind(Movie record) {
-            Uri posterUri = NetworkUtils.getImageUri(record.getPosterPath(), 185/* hard coded */);
+
+            Uri posterUri = NetworkUtils.getImageUri(record.getPosterPath(), activity);
             Glide.with(posterImageView.getContext()).load(posterUri).into(posterImageView);
             // TODO: add error and loading image
             titleTextView.setText(record.getTitle());
@@ -108,7 +113,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
-            clickListener.onItemClick(v, position);
+            if (clickListener != null) {
+                clickListener.onItemClick(v, position);
+            }
         }
     }
 }
