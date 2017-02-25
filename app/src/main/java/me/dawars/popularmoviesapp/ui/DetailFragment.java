@@ -19,6 +19,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -175,7 +176,7 @@ public class DetailFragment extends Fragment {
     private void bindData(Movie movie) {
         int width = DisplayUtils.getScreenMetrics(getActivity()).widthPixels / 2;
         Uri posterUri = NetworkUtils.getImageUri(movie.getPosterPath(), width);
-        Glide.with(this).load(posterUri).into(posterImageView);
+        Glide.with(this).load(posterUri).diskCacheStrategy(DiskCacheStrategy.ALL).into(posterImageView);
 
         posterImageView.getViewTreeObserver().addOnPreDrawListener(
                 new ViewTreeObserver.OnPreDrawListener() {

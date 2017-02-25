@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import static me.dawars.popularmoviesapp.data.MovieContract.MovieEntry.COLUMN_MOVIE_ID;
 import static me.dawars.popularmoviesapp.data.MovieContract.MovieEntry.TABLE_NAME;
 
 public class MovieContentProvider extends ContentProvider {
@@ -45,20 +46,15 @@ public class MovieContentProvider extends ContentProvider {
     }
 
 
-    // Implement insert to handle requests to insert a single new row of data
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
-        // Get access to the task database (to write new data to)
         final SQLiteDatabase db = movieDb.getWritableDatabase();
 
-        // Write URI matching code to identify the match for the tasks directory
         int match = sUriMatcher.match(uri);
         Uri returnUri; // URI to be returned
 
         switch (match) {
             case FAVOURITES:
-                // Insert new values into the database
-                // Inserting values into tasks table
                 long id = db.insert(TABLE_NAME, null, values);
                 if (id > 0) {
                     returnUri = ContentUris.withAppendedId(MovieContract.MovieEntry.CONTENT_URI, id);
@@ -121,35 +117,25 @@ public class MovieContentProvider extends ContentProvider {
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
 
-        // COMPLETED (1) Get access to the database and write URI matching code to recognize a single item
         final SQLiteDatabase db = movieDb.getWritableDatabase();
 
         int match = sUriMatcher.match(uri);
-        // Keep track of the number of deleted tasks
-        int tasksDeleted; // starts as 0
 
-        // COMPLETED (2) Write the code to delete a single row of data
-        // [Hint] Use selections to delete an item by its row ID
+        int movieDeleted;
         switch (match) {
-            // Handle the single item case, recognized by the ID included in the URI path
             case FAVOURITE_WITH_ID:
-                // Get the task ID from the URI path
                 String id = uri.getPathSegments().get(1);
-                // Use selections/selectionArgs to filter for this ID
-                tasksDeleted = db.delete(TABLE_NAME, "_id=?", new String[]{id});
+                movieDeleted = db.delete(TABLE_NAME, COLUMN_MOVIE_ID + "=?", new String[]{id});
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
 
-        // COMPLETED (3) Notify the resolver of a change and return the number of items deleted
-        if (tasksDeleted != 0) {
-            // A task was deleted, set notification
+        if (movieDeleted != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
 
-        // Return the number of tasks deleted
-        return tasksDeleted;
+        return movieDeleted;
     }
 
 

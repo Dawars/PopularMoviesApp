@@ -256,6 +256,7 @@ public class MainActivity extends AppCompatActivity
                     jsonResponse = NetworkUtils.getResponseFromHttpUrl(url);
                 } catch (IOException e) {
                     e.printStackTrace();
+                    // TODO add error message, timeout?
                     return null;
                 }
 

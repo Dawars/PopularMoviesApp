@@ -1,5 +1,6 @@
 package me.dawars.popularmoviesapp.data;
 
+import android.content.ContentValues;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -55,6 +56,19 @@ public class Movie implements Parcelable {
 
     @SerializedName("vote_average")
     float voteAvg;
+
+    public ContentValues toContentValues() {
+        ContentValues values = new ContentValues();
+        values.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, id);
+        values.put(MovieContract.MovieEntry.COLUMN_TITLE, title);
+        values.put(MovieContract.MovieEntry.COLUMN_OVERVIEW, overview);
+        values.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, releaseDate);
+        values.put(MovieContract.MovieEntry.COLUMN_POSTER_URL, posterPath);
+        values.put(MovieContract.MovieEntry.COLUMN_TITLE, title);
+        values.put(MovieContract.MovieEntry.COLUMN_VOTE, voteAvg);
+        values.put(MovieContract.MovieEntry.COLUMN_BACKDROP_URL, backdropPath);
+        return values;
+    }
 
 
     public static final class Result {
