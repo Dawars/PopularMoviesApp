@@ -1,24 +1,34 @@
 package me.dawars.popularmoviesapp.ui;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 
+import me.dawars.popularmoviesapp.R;
+
 public class ProportionalImageView extends ImageView {
 
-    private static final float ASPECT_RATIO = 1.5f;
+    private static float ASPECT_RATIO;
 
     public ProportionalImageView(Context context) {
         super(context);
+        ASPECT_RATIO = 1.5f;
     }
 
     public ProportionalImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
-    }
+        TypedArray a = context.getTheme().obtainStyledAttributes(
+                attrs,
+                R.styleable.ProportionalImageView,
+                0, 0);
 
-    public ProportionalImageView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
+        try {
+            ASPECT_RATIO = a.getFloat(R.styleable.ProportionalImageView_ratio, 0);
+        } finally {
+            a.recycle();
+        }
     }
 
     @Override

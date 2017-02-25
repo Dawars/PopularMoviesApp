@@ -1,6 +1,7 @@
 package me.dawars.popularmoviesapp.adapter;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,7 +48,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
 
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
-        int layoutIdForListItem = R.layout.video_list_item;
+        int layoutIdForListItem = R.layout.trailer_list_item;
         boolean shouldAttachToParentImmediately = false;
 
         View view = inflater.inflate(layoutIdForListItem, parent, shouldAttachToParentImmediately);
@@ -88,7 +89,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         public void bind(Video video) {
             title.setText(video.getName());
             Glide.with(thumbnail.getContext())
-                    .load("http://img.youtube.com/vi/" + video.getKey() + "/1.jpg")
+                    .load("http://img.youtube.com/vi/" + video.getKey() + "/mqdefault.jpg")
+                    .placeholder(new ColorDrawable(thumbnail.getContext().getResources().getColor(R.color.colorPrimary)))
+                    .crossFade()
                     .into(thumbnail);
         }
 

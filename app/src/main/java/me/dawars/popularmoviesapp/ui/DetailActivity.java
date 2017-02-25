@@ -1,16 +1,20 @@
 package me.dawars.popularmoviesapp.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -32,14 +36,16 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.iv_backdrop)
     ImageView backdropImage;
 
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
-
     @BindView(R.id.fab_favourite)
     FloatingActionButton fab;
 
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
     @BindView(R.id.coordinator)
     CoordinatorLayout coordinatorLayout;
+    @BindView(R.id.collapsing_toolbar)
+    CollapsingToolbarLayout collapsingToolbar;
 
     private Movie movie;
 
@@ -48,29 +54,48 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
+
         favouritesUtils = new FavouritesUtils(getApplicationContext());
 
-        movie = getIntent().getParcelableExtra(MainActivity.ARG_MOVIE);
+        Intent intent = getIntent();
+
+        if (intent != null && intent.hasExtra(MainActivity.ARG_MOVIE)) {
+            movie = intent.getExtras().getParcelable(MainActivity.ARG_MOVIE);
+        }
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.movie_detail_container, DetailFragment.newInstance(movie))
                     .commit();
         }
-        setSupportActionBar(toolbar);
 
-        Intent intent = getIntent();
-
-        if (intent != null && intent.hasExtra(MainActivity.ARG_MOVIE)) {
-            Movie movie = intent.getExtras().getParcelable(MainActivity.ARG_MOVIE);
-
-            int width = DisplayUtils.getScreenMetrics(this).widthPixels;
-            Uri backdropUri = NetworkUtils.getImageUri(movie.getBackdropPath(), width);
-            Log.v(TAG, "backdrop " + backdropUri.toString());
-            Glide.with(this).load(backdropUri).diskCacheStrategy(DiskCacheStrategy.ALL).into(backdropImage);
-        }
+        initToolbar(toolbar);
 
         updateFab();
+    }
+
+    private void initToolbar(Toolbar toolbar) {
+        setSupportActionBar(toolbar);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
+        }
+        collapsingToolbar.setTitle(movie.getTitle());
+        collapsingToolbar.setExpandedTitleColor(ContextCompat.getColor(this, android.R.color.transparent));
+        setTitle("");
+        getSupportActionBar().setTitle(movie.getTitle());
+
+        int width = DisplayUtils.getScreenMetrics(this).widthPixels;
+        Uri backdropUri = NetworkUtils.getImageUri(movie.getBackdropPath(), width);
+        Glide.with(this).load(backdropUri).diskCacheStrategy(DiskCacheStrategy.ALL).into(backdropImage);
+
     }
 
     private FavouritesUtils favouritesUtils;
