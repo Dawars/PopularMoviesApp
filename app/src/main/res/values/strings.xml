@@ -12,9 +12,6 @@
     <string name="transition_poster" translatable="false">poster</string>
     <string name="transition_title" translatable="false">title</string>
     <string name="reviews">Reviews</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="trailers">Trailers</string>
     <string name="message_removed_from_favorites">Movie removed from favourites</string>
     <string name="message_added_to_favorites">Movie added to favourites</string>

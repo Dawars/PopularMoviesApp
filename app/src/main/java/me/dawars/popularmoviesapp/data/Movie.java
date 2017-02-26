@@ -1,6 +1,7 @@
 package me.dawars.popularmoviesapp.data;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -57,6 +58,17 @@ public class Movie implements Parcelable {
     @SerializedName("vote_average")
     float voteAvg;
 
+    public Movie(Cursor cursor) {
+        this.setId((int) cursor.getLong(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID)));
+        this.setTitle(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_TITLE)));
+        this.setOverview(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_OVERVIEW)));
+        this.setReleaseDate(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_RELEASE_DATE)));
+        this.setPosterPath(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_POSTER_URL)));
+        this.setVoteAvg((float) cursor.getDouble(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_VOTE)));
+        this.setBackdropPath(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_BACKDROP_URL)));
+
+    }
+
     public ContentValues toContentValues() {
         ContentValues values = new ContentValues();
         values.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, id);
@@ -64,10 +76,65 @@ public class Movie implements Parcelable {
         values.put(MovieContract.MovieEntry.COLUMN_OVERVIEW, overview);
         values.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, releaseDate);
         values.put(MovieContract.MovieEntry.COLUMN_POSTER_URL, posterPath);
-        values.put(MovieContract.MovieEntry.COLUMN_TITLE, title);
         values.put(MovieContract.MovieEntry.COLUMN_VOTE, voteAvg);
         values.put(MovieContract.MovieEntry.COLUMN_BACKDROP_URL, backdropPath);
         return values;
+    }
+
+    public void setPosterPath(String posterPath) {
+        this.posterPath = posterPath;
+    }
+
+    public void setAdult(boolean adult) {
+        this.adult = adult;
+    }
+
+    public void setOverview(String overview) {
+        this.overview = overview;
+    }
+
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public void setGenreIds(List<Integer> genreIds) {
+        this.genreIds = genreIds;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setOrigTitle(String origTitle) {
+        this.origTitle = origTitle;
+    }
+
+    public void setOrigLang(String origLang) {
+        this.origLang = origLang;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setBackdropPath(String backdropPath) {
+        this.backdropPath = backdropPath;
+    }
+
+    public void setPopularity(float popularity) {
+        this.popularity = popularity;
+    }
+
+    public void setVoteCount(int voteCount) {
+        this.voteCount = voteCount;
+    }
+
+    public void setVideo(boolean video) {
+        this.video = video;
+    }
+
+    public void setVoteAvg(float voteAvg) {
+        this.voteAvg = voteAvg;
     }
 
 
@@ -195,8 +262,6 @@ public class Movie implements Parcelable {
         dest.writeByte((byte) (video ? 1 : 0));
         dest.writeFloat(voteAvg);
         dest.writeInt(voteCount);
-//        dest.writeByte((byte) (favorite ? 1 : 0));
-
     }
 
     //creator
@@ -219,7 +284,7 @@ public class Movie implements Parcelable {
         overview = in.readString();
         releaseDate = in.readString();
 
-        genreIds = new ArrayList<Integer>();
+        genreIds = new ArrayList<>();
         in.readList(genreIds, null);
 
         origTitle = in.readString();
@@ -230,6 +295,5 @@ public class Movie implements Parcelable {
         video = in.readByte() != 0;
         voteAvg = in.readFloat();
         voteCount = in.readInt();
-//        favorite = in.readByte()!=0;
     }
 }

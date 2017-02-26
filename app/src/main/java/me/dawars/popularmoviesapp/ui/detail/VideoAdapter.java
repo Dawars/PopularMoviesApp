@@ -1,4 +1,4 @@
-package me.dawars.popularmoviesapp.adapter;
+package me.dawars.popularmoviesapp.ui.detail;
 
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 
 import me.dawars.popularmoviesapp.R;
+import me.dawars.popularmoviesapp.adapter.ListItemClickListener;
 import me.dawars.popularmoviesapp.data.Video;
 
 /**

@@ -14,9 +14,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import me.dawars.popularmoviesapp.BuildConfig;
+import me.dawars.popularmoviesapp.ui.grid.MainActivity;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import static me.dawars.popularmoviesapp.ui.grid.MainActivity.POPULARITY;
+import static me.dawars.popularmoviesapp.ui.grid.MainActivity.RATING;
 
 /**
  * Created by dawars on 1/15/17.
@@ -47,9 +51,21 @@ public class NetworkUtils {
      * @param param can be SORT_POPULAR, SORT_RATING
      * @return
      */
-    public static URL buildMovieUrl(String param) {
+    public static URL buildMovieUrl(int page, int param) {
+        String sortBy = null;
+
+        switch (param) {
+            case POPULARITY:
+                sortBy = SORT_POPULAR;
+                break;
+            case RATING:
+                sortBy = SORT_RATING;
+                break;
+        }
+
         Uri uri = Uri.parse(MOVIES_BASE_URL).buildUpon()
-                .appendPath(param)
+                .appendPath(sortBy)
+                .appendQueryParameter(PAGE_PARAM, Integer.toString(page))
                 .appendQueryParameter(API_PARAM, MOVIES_API_KEY).build();
 
         Log.v(TAG, "Url: " + uri.toString());
@@ -118,6 +134,7 @@ public class NetworkUtils {
 
     /**
      * Checks the type of network connection
+     *
      * @param context
      * @return
      */
@@ -176,6 +193,7 @@ public class NetworkUtils {
 
     /**
      * Gives the image url with optimal image size, if mobile data is used gives a small image
+     *
      * @param posterUrl
      * @param activity
      * @return

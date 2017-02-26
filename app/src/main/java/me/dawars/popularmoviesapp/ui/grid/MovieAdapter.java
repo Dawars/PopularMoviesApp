@@ -1,4 +1,4 @@
-package me.dawars.popularmoviesapp.adapter;
+package me.dawars.popularmoviesapp.ui.grid;
 
 import android.app.Activity;
 import android.content.Context;
@@ -17,7 +17,6 @@ import java.util.List;
 
 import me.dawars.popularmoviesapp.R;
 import me.dawars.popularmoviesapp.data.Movie;
-import me.dawars.popularmoviesapp.utils.DisplayUtils;
 import me.dawars.popularmoviesapp.utils.NetworkUtils;
 
 /**
@@ -48,7 +47,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         this.activity = activity;
 
         this.clickListener = clickListener;
-
     }
 
     @Override
@@ -76,17 +74,21 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         return data.size();
     }
 
-    public void setData(List<Movie> data) {
-        this.data = data;
-        notifyDataSetChanged();
+    public void clearMovies() {
+        if (data != null) {
+            data.clear();
+            notifyDataSetChanged();
+        }
     }
 
     public void addMovieData(List<Movie> movieData) {
         if (this.data == null) {
             this.data = new ArrayList<>();
         }
-        this.data.addAll(movieData);
-        notifyDataSetChanged();
+        if (movieData != null) {
+            this.data.addAll(movieData);
+            notifyDataSetChanged();
+        }
     }
 
     class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -106,7 +108,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
             Uri posterUri = NetworkUtils.getImageUri(record.getPosterPath(), activity);
             Glide.with(posterImageView.getContext()).load(posterUri).into(posterImageView);
-            // TODO: add error and loading image
             titleTextView.setText(record.getTitle());
         }
 

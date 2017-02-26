@@ -1,6 +1,5 @@
 package me.dawars.popularmoviesapp.ui;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -13,7 +12,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -25,6 +23,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import me.dawars.popularmoviesapp.R;
 import me.dawars.popularmoviesapp.data.Movie;
+import me.dawars.popularmoviesapp.ui.grid.MainActivity;
 import me.dawars.popularmoviesapp.utils.DisplayUtils;
 import me.dawars.popularmoviesapp.utils.FavouritesUtils;
 import me.dawars.popularmoviesapp.utils.NetworkUtils;
@@ -49,13 +48,14 @@ public class DetailActivity extends AppCompatActivity {
 
     private Movie movie;
 
+    private FavouritesUtils favouritesUtils;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
-
-        favouritesUtils = new FavouritesUtils(getApplicationContext());
+        favouritesUtils = new FavouritesUtils(this);
 
         Intent intent = getIntent();
 
@@ -97,8 +97,6 @@ public class DetailActivity extends AppCompatActivity {
         Glide.with(this).load(backdropUri).diskCacheStrategy(DiskCacheStrategy.ALL).into(backdropImage);
 
     }
-
-    private FavouritesUtils favouritesUtils;
 
     @OnClick(R.id.fab_favourite)
     void onFabClicked() {

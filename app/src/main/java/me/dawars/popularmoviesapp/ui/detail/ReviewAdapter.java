@@ -1,16 +1,13 @@
-package me.dawars.popularmoviesapp.adapter;
+package me.dawars.popularmoviesapp.ui.detail;
 
 import android.content.Context;
-import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
-import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import me.dawars.popularmoviesapp.R;
 import me.dawars.popularmoviesapp.data.Review;

@@ -1,4 +1,4 @@
-package me.dawars.popularmoviesapp.data.loader;
+package me.dawars.popularmoviesapp.ui.detail;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -14,8 +14,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.URL;
 
-import me.dawars.popularmoviesapp.adapter.ReviewAdapter;
-import me.dawars.popularmoviesapp.adapter.VideoAdapter;
 import me.dawars.popularmoviesapp.data.MovieDetail;
 import me.dawars.popularmoviesapp.utils.NetworkUtils;
 
