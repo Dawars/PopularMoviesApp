@@ -109,6 +109,25 @@ public class MainActivity extends AppCompatActivity
 
         setSupportActionBar(toolbar);
 
+        // restore Sorting criteria and fab menu
+        View fab = fabSortPopular;
+        if (savedInstanceState != null) {
+            // noinspection ResourceType
+            sortBy = savedInstanceState.getInt(MOVIE_SORT_KEY);
+            switch (sortBy) {
+                case POPULARITY:
+                    fab = fabSortPopular;
+                    break;
+                case RATING:
+                    fab = fabSortRating;
+                    break;
+                case FAVOURITE:
+                    fab = fabSortFavourite;
+                    break;
+            }
+        }
+        setFabColor(fab, R.color.colorAccentDark, R.color.colorAccent);
+
         // disable fab menu icon rotation
         fabMenu.setIconAnimated(false);
 
@@ -157,18 +176,25 @@ public class MainActivity extends AppCompatActivity
 
         loaderManager.initLoader(LOADER_MOVIE_ID, bundle, this);
 
-        setFabColor(fabSortPopular, R.color.colorAccentDark, R.color.colorAccent);
-
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(MOVIE_SORT_KEY, sortBy);
+    }
+
 
     private void snackbar(@StringRes int resId) {
         Snackbar.make(coordinator, resId, Snackbar.LENGTH_SHORT).show();
+        // FIXME move fab menu when opening snackbar
     }
 
     private void loadMovieData(int page, @SortCriteria int sortBy) {
+        // TODO is page 1 called on screen rotate?
         if (page == 1) { // if (re)loading 1st page replace data, otherwise add new pages
             invalidateData();
-            scrollListener.resetState();
+            scrollListener.resetState(); // FIXME don't call on device rotation
         }
 
         LoaderManager loaderManager = getSupportLoaderManager();
@@ -194,7 +220,7 @@ public class MainActivity extends AppCompatActivity
         Intent intent = DetailActivity.prepareIntent(this, movie);
 
         Pair<View, String> p1 = Pair.create((View) posterIv, getString(R.string.transition_poster));
-        Pair<View, String> p2 = Pair.create((View) titleTv, getString(R.string.transition_title));
+        Pair<View, String> p2 = Pair.create((View) titleTv, getString(R.string.transition_title));// TODO: change to bg card
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, p1, p2);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -270,7 +296,8 @@ public class MainActivity extends AppCompatActivity
 
                 swipeRefresh.setRefreshing(true);
 
-                if (movieData != null) {
+                // if the data is already present and not favourites (data may have changed)
+                if (movieData != null && sortCrit != FAVOURITE) {
                     Log.i(TAG, "Data already present");
                     deliverResult(movieData);
                     swipeRefresh.setRefreshing(false);
@@ -309,7 +336,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 URL url = NetworkUtils.buildMovieUrl(page, sortCrit);
 
-                String jsonResponse = null;
+                String jsonResponse;
 
                 try {
                     jsonResponse = NetworkUtils.getResponseFromHttpUrl(url);
