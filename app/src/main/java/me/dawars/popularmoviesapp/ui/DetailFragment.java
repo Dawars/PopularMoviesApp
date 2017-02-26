@@ -154,7 +154,6 @@ public class DetailFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        // FIXME fix rotation
         super.onSaveInstanceState(outState);
         if (videoAdapter.getItemCount() != 0) {
             outState.putParcelableArrayList(MOVIE_VIDEOS_KEY, videoAdapter.getVideos());
@@ -174,7 +173,7 @@ public class DetailFragment extends Fragment {
     }
 
     private void bindData(Movie movie) {
-        int width = DisplayUtils.getScreenMetrics(getActivity()).widthPixels / 2;
+        int width = DisplayUtils.getScreenMetrics(getActivity()).widthPixels / 2; //FIXME 100dp or so
         Uri posterUri = NetworkUtils.getImageUri(movie.getPosterPath(), width);
         Glide.with(this).load(posterUri).diskCacheStrategy(DiskCacheStrategy.ALL).into(posterImageView);
 

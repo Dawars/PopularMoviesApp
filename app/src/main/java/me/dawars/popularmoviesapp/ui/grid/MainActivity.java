@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity
     CoordinatorLayout coordinator;
 
     @BindView(R.id.swipe_refresh_layout)
-    SwipeRefreshLayout swipreRefresh;
+    SwipeRefreshLayout swipeRefresh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,8 +127,8 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
-        swipreRefresh.setColorSchemeResources(R.color.loader1, R.color.loader2, R.color.loader3);
-        swipreRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        swipeRefresh.setColorSchemeResources(R.color.loader1, R.color.loader2, R.color.loader3);
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 Log.v(TAG, "refreshing");
@@ -166,24 +166,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void loadMovieData(int page, @SortCriteria int sortBy) {
-
-        if (NetworkUtils.isNetworkAvailable(this)) {
-            if (page == 1) { // if (re)loading 1st page replace data, otherwise add new pages
-                invalidateData();
-                scrollListener.resetState();
-            }
-
-            LoaderManager loaderManager = getSupportLoaderManager();
-
-            Bundle bundle = new Bundle();
-            bundle.putInt(MOVIE_PAGE_KEY, page);
-            bundle.putInt(MOVIE_SORT_KEY, sortBy);
-
-            loaderManager.restartLoader(LOADER_MOVIE_ID, bundle, this);
-        } else {
-            swipreRefresh.setRefreshing(false);
-            snackbar(R.string.no_network);
+        if (page == 1) { // if (re)loading 1st page replace data, otherwise add new pages
+            invalidateData();
+            scrollListener.resetState();
         }
+
+        LoaderManager loaderManager = getSupportLoaderManager();
+
+        Bundle bundle = new Bundle();
+        bundle.putInt(MOVIE_PAGE_KEY, page);
+        bundle.putInt(MOVIE_SORT_KEY, sortBy);
+
+        loaderManager.restartLoader(LOADER_MOVIE_ID, bundle, this);
     }
 
     private void invalidateData() {
@@ -274,11 +268,12 @@ public class MainActivity extends AppCompatActivity
                 page = args.getInt(MOVIE_PAGE_KEY);
                 sortCrit = args.getInt(MOVIE_SORT_KEY);
 
-                swipreRefresh.setRefreshing(true);
+                swipeRefresh.setRefreshing(true);
 
                 if (movieData != null) {
                     Log.i(TAG, "Data already present");
                     deliverResult(movieData);
+                    swipeRefresh.setRefreshing(false);
                 } else {
                     forceLoad();
                 }
@@ -309,7 +304,7 @@ public class MainActivity extends AppCompatActivity
                 }
 
                 if (!NetworkUtils.isNetworkAvailable(MainActivity.this)) {
-                    swipreRefresh.setRefreshing(false);
+                    swipeRefresh.setRefreshing(false);
                     snackbar(R.string.no_network);
                 }
                 URL url = NetworkUtils.buildMovieUrl(page, sortCrit);
@@ -366,8 +361,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> movieData) {
+        Log.i(TAG, "onFinished loading");
         movieAdapter.addMovieData(movieData);
-        swipreRefresh.setRefreshing(false);
+        swipeRefresh.setRefreshing(false);
     }
 
     @Override
