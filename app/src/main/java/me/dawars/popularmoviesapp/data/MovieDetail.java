@@ -22,7 +22,7 @@ public class MovieDetail {
 
     public Review.Result reviews;
     public Video.Result videos;
-    public Cast.Result cast;
+    public Cast.Credits credits;
 
     public String getTagline() {
         return tagline;

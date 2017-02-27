@@ -27,8 +27,6 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastViewHolder
 
     private ArrayList<Cast> CastData;
 
-    private ListItemClickListener clickListener;
-
     public Cast getCast(int position) {
         if (position < 0 || position >= CastData.size())
             throw new ArrayIndexOutOfBoundsException();
@@ -38,14 +36,6 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastViewHolder
 
     public ArrayList<Cast> getCasts() {
         return CastData;
-    }
-
-    public interface ListItemClickListener {
-        void onItemClick(View v, int position);
-    }
-
-    public void setOnClickListener(ListItemClickListener clickListener) {
-        this.clickListener = clickListener;
     }
 
     @Override
@@ -70,7 +60,7 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastViewHolder
         if (CastData == null) {
             return 0;
         }
-        return CastData.size();
+        return CastData.size();    // TODO: only display first few
     }
 
     public void setCastData(ArrayList<Cast> CastData) {
@@ -78,7 +68,7 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastViewHolder
         notifyDataSetChanged();
     }
 
-    class CastViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class CastViewHolder extends RecyclerView.ViewHolder {
         public final TextView characterTextView;
         public final TextView nameTextView;
         public final ImageView profileImage; // TODO: round image view
@@ -89,8 +79,6 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastViewHolder
             characterTextView = (TextView) itemView.findViewById(R.id.tv_character);
             nameTextView = (TextView) itemView.findViewById(R.id.tv_name);
             profileImage = (ImageView) itemView.findViewById(R.id.iv_profile);
-
-            itemView.setOnClickListener(this);
         }
 
         public void bind(Cast cast) {
@@ -107,12 +95,5 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastViewHolder
             return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
         }
 
-        @Override
-        public void onClick(View v) {
-            int position = getAdapterPosition();
-            if (clickListener != null) {
-                clickListener.onItemClick(v, position);
-            }
-        }
     }
 }

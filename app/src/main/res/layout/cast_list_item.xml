@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="wrap_content"
+    android:clipToPadding="false"
+    android:foreground="?android:selectableItemBackground"
+    android:minHeight="?android:listPreferredItemHeight"
+    android:paddingBottom="@dimen/padding_normal"
+    android:paddingEnd="@dimen/padding_normal"
+    android:paddingRight="@dimen/padding_normal"
+    android:paddingTop="@dimen/padding_normal">
 
     <ImageView
         android:id="@+id/iv_profile"
@@ -13,11 +19,17 @@
         android:id="@+id/tv_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/iv_profile"
+        android:layout_toRightOf="@+id/iv_profile"
         android:text="Benedict Cumberbatch" />
 
     <TextView
         android:id="@+id/tv_character"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_name"
+        android:layout_toEndOf="@+id/iv_profile"
+        android:layout_toRightOf="@+id/iv_profile"
         android:text="Doctor Strange" />
-</LinearLayout>
+</RelativeLayout>

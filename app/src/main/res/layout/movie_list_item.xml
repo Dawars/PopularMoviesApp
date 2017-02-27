@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <me.dawars.popularmoviesapp.ui.ProportionalImageView
+        <me.dawars.popularmoviesapp.ui.widget.ProportionalImageView
             android:id="@+id/im_poster"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

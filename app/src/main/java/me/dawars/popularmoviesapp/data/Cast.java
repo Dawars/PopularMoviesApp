@@ -37,7 +37,7 @@ public class Cast implements Parcelable {
     }
 
 
-    public static final class Result {
+    public static final class Credits {
         @SerializedName("cast")
         public ArrayList<Cast> cast = new ArrayList<>();
     }

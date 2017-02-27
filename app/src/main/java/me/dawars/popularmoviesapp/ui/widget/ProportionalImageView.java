@@ -1,4 +1,4 @@
-package me.dawars.popularmoviesapp.ui;
+package me.dawars.popularmoviesapp.ui.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;

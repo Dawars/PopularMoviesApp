@@ -33,6 +33,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.dawars.popularmoviesapp.R;
 import me.dawars.popularmoviesapp.adapter.ListItemClickListener;
+import me.dawars.popularmoviesapp.data.Cast;
 import me.dawars.popularmoviesapp.data.Movie;
 import me.dawars.popularmoviesapp.data.MovieDetail;
 import me.dawars.popularmoviesapp.data.Review;
@@ -51,6 +52,7 @@ public class DetailFragment extends Fragment {
     private static final int LOADER_MOVIE_DETAIL_ID = 2;
     private static final String MOVIE_VIDEOS_KEY = "VIDEOS_KEY";
     private static final String MOVIE_REVIEWS_KEY = "REVIEWS_KEY";
+    private static final String MOVIE_CAST_KEY = "CAST_KEY";
 
     private Movie movie;
     private MovieDetail movieDetail;
@@ -152,6 +154,8 @@ public class DetailFragment extends Fragment {
 
                 taglineTextView.setText(data.getTagline());
                 runtimeTextView.setText(data.getRuntime() + " " + getResources().getString(R.string.minute));
+
+                castAdapter.setCastData(data.credits.cast);
             }
         };
         reviewLayout = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
@@ -182,6 +186,10 @@ public class DetailFragment extends Fragment {
         genreList.setLayoutManager(genreLayoutManager);
         genreList.setAdapter(genreAdapter);
 
+        castAdapter = new CastAdapter();
+        castList.setLayoutManager(castLayoutManager);
+        castList.setAdapter(castAdapter);
+
         bindData(movie);
 
         return rootView;
@@ -196,6 +204,9 @@ public class DetailFragment extends Fragment {
         if (reviewAdapter.getItemCount() != 0) {
             outState.putParcelableArrayList(MOVIE_REVIEWS_KEY, reviewAdapter.getReviews());
         }
+        if (castAdapter.getItemCount() != 0) {
+            outState.putParcelableArrayList(MOVIE_CAST_KEY, castAdapter.getCasts());
+        }
     }
 
     @Override
@@ -204,6 +215,7 @@ public class DetailFragment extends Fragment {
         if (savedInstanceState != null) {
             trailerAdapter.setVideoData(savedInstanceState.<Video>getParcelableArrayList(MOVIE_VIDEOS_KEY));
             reviewAdapter.setReviewData(savedInstanceState.<Review>getParcelableArrayList(MOVIE_REVIEWS_KEY));
+            castAdapter.setCastData(savedInstanceState.<Cast>getParcelableArrayList(MOVIE_CAST_KEY));
         }
     }
 
