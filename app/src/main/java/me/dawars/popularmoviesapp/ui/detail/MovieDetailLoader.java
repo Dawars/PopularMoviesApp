@@ -21,7 +21,7 @@ import me.dawars.popularmoviesapp.utils.NetworkUtils;
  * Created by dawars on 2/12/17.
  */
 
-public class MovieDetailLoader implements LoaderManager.LoaderCallbacks<MovieDetail> {
+public abstract class MovieDetailLoader implements LoaderManager.LoaderCallbacks<MovieDetail> {
 
     private static final String STATUS_CODE = "status_code";
 
@@ -29,13 +29,9 @@ public class MovieDetailLoader implements LoaderManager.LoaderCallbacks<MovieDet
 
 
     private final Context context;
-    private final ReviewAdapter reviewAdapter;
-    private final TrailerAdapter trailerAdapter;
 
-    public MovieDetailLoader(Context context, ReviewAdapter reviewAdapter, TrailerAdapter trailerAdapter) {
+    public MovieDetailLoader(Context context) {
         this.context = context;
-        this.reviewAdapter = reviewAdapter;
-        this.trailerAdapter = trailerAdapter;
     }
 
     @Override
@@ -48,7 +44,6 @@ public class MovieDetailLoader implements LoaderManager.LoaderCallbacks<MovieDet
                 if (data != null) {
                     deliverResult(data);
                 } else {
-//                    loadingIndicator.setVisibility(View.VISIBLE);
                     forceLoad();
                 }
             }
@@ -106,16 +101,10 @@ public class MovieDetailLoader implements LoaderManager.LoaderCallbacks<MovieDet
 
     @Override
     public void onLoadFinished(Loader<MovieDetail> loader, MovieDetail data) {
-        reviewAdapter.setReviewData(data.reviews.reviews);
-        trailerAdapter.setVideoData(data.videos.videos);
-//        swipreRefresh.setRefreshing(false);
-
-//        if (review != null && review.size() > 0) {
-//            showMovieDataView();
-//        } else {
-//            showErrorView();
-//        }
+        onFinish(data);
     }
+
+    public abstract void onFinish(MovieDetail data);
 
     @Override
     public void onLoaderReset(Loader<MovieDetail> loader) {

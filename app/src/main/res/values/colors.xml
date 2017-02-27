@@ -13,4 +13,5 @@
     <color name="loader1">@color/colorPrimary</color>
     <color name="loader2">#6400A3</color>
     <color name="loader3">@color/colorAccent</color>
+    <color name="colorLightGray">#eee</color>
 </resources>

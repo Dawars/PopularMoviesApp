@@ -35,6 +35,7 @@ public class NetworkUtils {
     private static final String MOVIES_BASE_URL = "http://api.themoviedb.org/3/movie/";
     private static final String MOVIES_REVIEWS = "reviews";
     private static final String MOVIES_VIDEOS = "videos";
+    private static final String MOVIES_CREDITS = "credits";
 
     public static final String SORT_POPULAR = "popular";
     public static final String SORT_RATING = "top_rated";
@@ -88,7 +89,7 @@ public class NetworkUtils {
     public static URL buildDetailUrl(String movieId) {
         Uri uri = Uri.parse(MOVIES_BASE_URL).buildUpon()
                 .appendPath(movieId)
-                .appendQueryParameter(APPEND_RESPONSE_PARAM, MOVIES_REVIEWS + "," + MOVIES_VIDEOS)
+                .appendQueryParameter(APPEND_RESPONSE_PARAM, MOVIES_REVIEWS + "," + MOVIES_VIDEOS + "," + MOVIES_CREDITS)
                 .appendQueryParameter(API_PARAM, MOVIES_API_KEY).build();
 
         Log.v(TAG, "Detail Url: " + uri.toString());
@@ -187,7 +188,7 @@ public class NetworkUtils {
             w = "w780";
         }
         String url = "http://image.tmdb.org/t/p/" + w + "/" + posterUrl;
-        Log.i(TAG, url);
+        Log.v(TAG, url);
         return Uri.parse(url);
     }
 

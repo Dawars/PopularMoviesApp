@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.DetailActivity"
+            android:name=".ui.detail.DetailActivity"
             android:theme="@style/AppTheme.NoActionBar.Transparent" />
 
         <provider

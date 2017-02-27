@@ -1,6 +1,7 @@
-package me.dawars.popularmoviesapp.ui;
+package me.dawars.popularmoviesapp.ui.detail;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -32,15 +33,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.dawars.popularmoviesapp.R;
 import me.dawars.popularmoviesapp.adapter.ListItemClickListener;
-import me.dawars.popularmoviesapp.ui.detail.ReviewAdapter;
-import me.dawars.popularmoviesapp.ui.detail.TrailerAdapter;
 import me.dawars.popularmoviesapp.data.Movie;
 import me.dawars.popularmoviesapp.data.MovieDetail;
 import me.dawars.popularmoviesapp.data.Review;
 import me.dawars.popularmoviesapp.data.Video;
-import me.dawars.popularmoviesapp.ui.detail.MovieDetailLoader;
 import me.dawars.popularmoviesapp.ui.grid.MainActivity;
-import me.dawars.popularmoviesapp.utils.DisplayUtils;
 import me.dawars.popularmoviesapp.utils.NetworkUtils;
 
 /**
@@ -61,14 +58,22 @@ public class DetailFragment extends Fragment {
     private MovieDetailLoader reviewLoader;
     private ReviewAdapter reviewAdapter;
     private TrailerAdapter trailerAdapter;
-    private LinearLayoutManager reviewsLayoutManager;
-    private LinearLayoutManager videosLayoutManager;
+    private GenreAdapter genreAdapter;
+    private CastAdapter castAdapter;
+    private LinearLayoutManager reviewLayout;
+    private LinearLayoutManager trailerLayout;
+    private LinearLayoutManager genreLayoutManager;
+    private LinearLayoutManager castLayoutManager;
 
 
     @BindView(R.id.tv_title)
     TextView titleTextView;
     @BindView(R.id.im_poster)
     ImageView posterImageView;
+    @BindView(R.id.tv_tagline)
+    TextView taglineTextView;
+    @BindView(R.id.tv_runtime)
+    TextView runtimeTextView;
     @BindView(R.id.tv_overview)
     TextView overviewTextView;
     @BindView(R.id.rb_rating)
@@ -79,8 +84,12 @@ public class DetailFragment extends Fragment {
     @BindView(R.id.reviews_list)
     RecyclerView reviewsList;
 
-    @BindView(R.id.videos_list)
-    RecyclerView videosList;
+    @BindView(R.id.trailers_list)
+    RecyclerView trailerList;
+    @BindView(R.id.genre_list)
+    RecyclerView genreList;
+    @BindView(R.id.cast_list)
+    RecyclerView castList;
 
     public DetailFragment() {
         // Required empty public constructor
@@ -134,15 +143,28 @@ public class DetailFragment extends Fragment {
         reviewAdapter = new ReviewAdapter();
         trailerAdapter = new TrailerAdapter();
 
-        reviewLoader = new MovieDetailLoader(getContext(), reviewAdapter, trailerAdapter);
-        reviewsLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        videosLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        reviewLoader = new MovieDetailLoader(getContext()) {
+            @Override
+            public void onFinish(MovieDetail data) {
+                reviewAdapter.setReviewData(data.reviews.reviews);
+                trailerAdapter.setVideoData(data.videos.videos);
+                movieDetail = data;
+
+                taglineTextView.setText(data.getTagline());
+                runtimeTextView.setText(data.getRuntime() + " " + getResources().getString(R.string.minute));
+            }
+        };
+        reviewLayout = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        trailerLayout = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+
+        castLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        genreLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
 
         reviewsList.setAdapter(reviewAdapter);
-        reviewsList.setLayoutManager(reviewsLayoutManager);
+        reviewsList.setLayoutManager(reviewLayout);
 
-        videosList.setAdapter(trailerAdapter);
-        videosList.setLayoutManager(videosLayoutManager);
+        trailerList.setAdapter(trailerAdapter);
+        trailerList.setLayoutManager(trailerLayout);
         trailerAdapter.setOnClickListener(new ListItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
@@ -155,6 +177,10 @@ public class DetailFragment extends Fragment {
                 Log.i(TAG, "Not a youtube video");
             }
         });
+
+        genreAdapter = new GenreAdapter();
+        genreList.setLayoutManager(genreLayoutManager);
+        genreList.setAdapter(genreAdapter);
 
         bindData(movie);
 
@@ -182,7 +208,7 @@ public class DetailFragment extends Fragment {
     }
 
     private void bindData(Movie movie) {
-        int width = DisplayUtils.getScreenMetrics(getActivity()).widthPixels / 2; //FIXME 100dp or so
+        int width = dpToPx(150);
         Uri posterUri = NetworkUtils.getImageUri(movie.getPosterPath(), width);
         Glide.with(this).load(posterUri).diskCacheStrategy(DiskCacheStrategy.ALL).into(posterImageView);
 
@@ -200,7 +226,14 @@ public class DetailFragment extends Fragment {
         titleTextView.setText(movie.getTitle());
         overviewTextView.setText(movie.getOverview());
         ratingTextView.setRating(movie.getVoteAvg());
-        releaseDateTextView.setText(movie.getReleaseDate());
+        releaseDateTextView.setText(movie.getReleaseDate().substring(0, 4));
+
+        genreAdapter.setGenreData(movie.getGenreIds());
+        // TODO add tagTextView list
+    }
+
+    private int dpToPx(int dp) {
+        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }
 
 

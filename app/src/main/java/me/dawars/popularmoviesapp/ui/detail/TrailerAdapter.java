@@ -76,20 +76,17 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.VideoVie
     }
 
     class VideoViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public final TextView title;
         public final ImageView thumbnail;
 
         public VideoViewHolder(View itemView) {
             super(itemView);
 
-            title = (TextView) itemView.findViewById(R.id.tv_title);
             thumbnail = (ImageView) itemView.findViewById(R.id.iv_thumbnail);
 
             itemView.setOnClickListener(this);
         }
 
         public void bind(Video video) {
-            title.setText(video.getName());
             Glide.with(thumbnail.getContext())
                     .load("http://img.youtube.com/vi/" + video.getKey() + "/mqdefault.jpg")
                     .placeholder(new ColorDrawable(thumbnail.getContext().getResources().getColor(R.color.colorPrimary)))

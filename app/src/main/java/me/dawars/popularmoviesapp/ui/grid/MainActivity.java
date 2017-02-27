@@ -44,7 +44,7 @@ import butterknife.OnClick;
 import me.dawars.popularmoviesapp.R;
 import me.dawars.popularmoviesapp.data.Movie;
 import me.dawars.popularmoviesapp.data.MovieContract;
-import me.dawars.popularmoviesapp.ui.DetailActivity;
+import me.dawars.popularmoviesapp.ui.detail.DetailActivity;
 import me.dawars.popularmoviesapp.utils.NetworkUtils;
 
 public class MainActivity extends AppCompatActivity

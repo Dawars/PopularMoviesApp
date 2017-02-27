@@ -6,7 +6,7 @@
     android:layout_marginLeft="@dimen/activity_horizontal_margin"
     android:layout_marginRight="@dimen/activity_horizontal_margin"
     android:orientation="vertical"
-    tools:context="me.dawars.popularmoviesapp.ui.DetailFragment">
+    tools:context="me.dawars.popularmoviesapp.ui.detail.DetailFragment">
 
     <me.dawars.popularmoviesapp.ui.ProportionalImageView
         android:id="@+id/im_poster"
@@ -22,6 +22,12 @@
         android:text="Title"
         android:textSize="20sp"
         android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_runtime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="120 min" />
 
     <RatingBar
         android:id="@+id/rb_rating"
@@ -43,14 +49,46 @@
         android:id="@+id/tv_tagline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Blah blah"
+        android:text="Tagline"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tv_overview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-    <!--TODO: genre tag list-->
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/trailers"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/trailers_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="false" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/genre_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="false" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/trailers"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/cast_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="false" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -64,16 +102,4 @@
         android:layout_height="wrap_content"
         android:nestedScrollingEnabled="false" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/trailers"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/videos_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="false" />
 </LinearLayout>
