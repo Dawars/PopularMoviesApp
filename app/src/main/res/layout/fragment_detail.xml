@@ -7,7 +7,8 @@
     android:layout_marginRight="@dimen/activity_horizontal_margin"
     android:orientation="vertical"
     tools:context="me.dawars.popularmoviesapp.ui.DetailFragment">
-
+<!-- TODO style, margins, use black, dp textview-->
+<!-- TODO landscape card view, top padding-->
     <me.dawars.popularmoviesapp.ui.ProportionalImageView
         android:id="@+id/im_poster"
         android:layout_width="150dp"
@@ -51,18 +52,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <!--TODO: genre tag list-->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/reviews"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/reviews_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="false" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -76,4 +65,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:nestedScrollingEnabled="false" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/reviews"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/reviews_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="false" />
+
 </LinearLayout>

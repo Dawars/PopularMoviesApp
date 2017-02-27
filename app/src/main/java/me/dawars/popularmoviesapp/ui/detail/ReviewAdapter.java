@@ -72,7 +72,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         this.reviewData = reviewData;
         notifyDataSetChanged();
     }
-
+//TODO comment expand or decorator and open link
     class ReviewViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final TextView authorTextView;
         public final TextView contentTextView;

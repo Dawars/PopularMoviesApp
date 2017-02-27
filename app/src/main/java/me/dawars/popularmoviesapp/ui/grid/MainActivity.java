@@ -2,7 +2,6 @@ package me.dawars.popularmoviesapp.ui.grid;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
@@ -13,8 +12,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.AsyncTaskLoader;
-import android.support.v4.content.Loader;
 import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -28,14 +25,7 @@ import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
-import com.google.gson.Gson;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -43,26 +33,29 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import me.dawars.popularmoviesapp.R;
 import me.dawars.popularmoviesapp.data.Movie;
-import me.dawars.popularmoviesapp.data.MovieContract;
 import me.dawars.popularmoviesapp.ui.DetailActivity;
 import me.dawars.popularmoviesapp.utils.NetworkUtils;
 
+import static me.dawars.popularmoviesapp.ui.grid.MovieLoader.MOVIE_PAGE_KEY;
+import static me.dawars.popularmoviesapp.ui.grid.MovieLoader.MOVIE_SORT_KEY;
+
 public class MainActivity extends AppCompatActivity
-        implements MovieAdapter.ListItemClickListener, LoaderManager.LoaderCallbacks<List<Movie>> {
+        implements MovieAdapter.ListItemClickListener, MovieLoaderCallback {
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
     public static final String ARG_MOVIE = "MOVIE_KEY";
 
-    private static final String MOVIE_PAGE_KEY = "PAGE_KEY";
-    private static final String MOVIE_SORT_KEY = "SORT_KEY";
-
-    private static final String MOVIES_STATUS_CODE = "status_code";
     public static final int LOADER_MOVIE_ID = 1;
+    public static final int LOADER_FAVOURITE_ID = 2;
+
+    private MovieLoader movieLoader = new MovieLoader(this, this);
+    private FavouriteLoader favouriteLoader = new FavouriteLoader(this, this);
 
     public static final int POPULARITY = 0;
     public static final int RATING = 1;
     public static final int FAVOURITE = 2;
+
 
     @IntDef({POPULARITY, RATING, FAVOURITE})
     public @interface SortCriteria {
@@ -80,6 +73,7 @@ public class MainActivity extends AppCompatActivity
 
     private EndlessRecyclerViewScrollListener scrollListener;
 
+    // TODO use data binding
     @BindView(R.id.tv_error)
     TextView errorMessageDisplay;
 
@@ -108,28 +102,7 @@ public class MainActivity extends AppCompatActivity
         ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
-
-        // restore Sorting criteria and fab menu
-        View fab = fabSortPopular;
-        if (savedInstanceState != null) {
-            // noinspection ResourceType
-            sortBy = savedInstanceState.getInt(MOVIE_SORT_KEY);
-            switch (sortBy) {
-                case POPULARITY:
-                    fab = fabSortPopular;
-                    break;
-                case RATING:
-                    fab = fabSortRating;
-                    break;
-                case FAVOURITE:
-                    fab = fabSortFavourite;
-                    break;
-            }
-        }
-        setFabColor(fab, R.color.colorAccentDark, R.color.colorAccent);
-
-        // disable fab menu icon rotation
-        fabMenu.setIconAnimated(false);
+        initFab(savedInstanceState);
 
         layoutManager = new GridLayoutManager(this, 3);
 
@@ -151,6 +124,9 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onRefresh() {
                 Log.v(TAG, "refreshing");
+                // reset data
+                invalidateData();
+
                 loadMovieData(1, sortBy);
             }
         });
@@ -169,13 +145,41 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setOnScrollListener(scrollListener);
 
         Log.v(TAG, "Init loader");
+        invalidateData();
+        swipeRefresh.setRefreshing(true);
         LoaderManager loaderManager = getSupportLoaderManager();
-        Bundle bundle = new Bundle();
-        bundle.putInt(MOVIE_PAGE_KEY, 1);
-        bundle.putInt(MOVIE_SORT_KEY, sortBy);
+        if (sortBy == FAVOURITE) {
+            loaderManager.initLoader(LOADER_FAVOURITE_ID, null, favouriteLoader);
+        } else {
+            Bundle bundle = new Bundle();
+            bundle.putInt(MOVIE_PAGE_KEY, 1);
+            bundle.putInt(MOVIE_SORT_KEY, sortBy);
+            loaderManager.initLoader(LOADER_MOVIE_ID, bundle, movieLoader);
+        }
+    }
 
-        loaderManager.initLoader(LOADER_MOVIE_ID, bundle, this);
+    private void initFab(Bundle savedInstanceState) {
+        // disable fab menu icon rotation
+        fabMenu.setIconAnimated(false);
 
+        // restore Sorting criteria and fab menu
+        View fab = fabSortPopular;
+        if (savedInstanceState != null) {
+            // noinspection ResourceType
+            sortBy = savedInstanceState.getInt(MOVIE_SORT_KEY);
+            switch (sortBy) {
+                case POPULARITY:
+                    fab = fabSortPopular;
+                    break;
+                case RATING:
+                    fab = fabSortRating;
+                    break;
+                case FAVOURITE:
+                    fab = fabSortFavourite;
+                    break;
+            }
+        }
+        setFabColor(fab, R.color.colorAccentDark, R.color.colorAccent);
     }
 
     @Override
@@ -190,24 +194,36 @@ public class MainActivity extends AppCompatActivity
         // FIXME move fab menu when opening snackbar
     }
 
+    /**
+     * Loads movie data at page
+     *
+     * @param page
+     * @param sortBy
+     */
     private void loadMovieData(int page, @SortCriteria int sortBy) {
-        // TODO is page 1 called on screen rotate?
-        if (page == 1) { // if (re)loading 1st page replace data, otherwise add new pages
-            invalidateData();
-            scrollListener.resetState(); // FIXME don't call on device rotation
+        if (!NetworkUtils.isNetworkAvailable(MainActivity.this)) {
+            swipeRefresh.setRefreshing(false);
+            snackbar(R.string.no_network);
         }
 
+        swipeRefresh.setRefreshing(true);
+
         LoaderManager loaderManager = getSupportLoaderManager();
-
-        Bundle bundle = new Bundle();
-        bundle.putInt(MOVIE_PAGE_KEY, page);
-        bundle.putInt(MOVIE_SORT_KEY, sortBy);
-
-        loaderManager.restartLoader(LOADER_MOVIE_ID, bundle, this);
+        if (sortBy == FAVOURITE) {
+            // using initLoader because the arguments are the same, needs reload
+            loaderManager.initLoader(LOADER_FAVOURITE_ID, null, favouriteLoader); // will it run?
+        } else {
+            Bundle bundle = new Bundle();
+            bundle.putInt(MOVIE_PAGE_KEY, page);
+            bundle.putInt(MOVIE_SORT_KEY, sortBy);
+            // the arguments change
+            loaderManager.restartLoader(LOADER_MOVIE_ID, bundle, movieLoader);
+        }
     }
 
     private void invalidateData() {
         movieAdapter.clearMovies();
+        scrollListener.resetState();
     }
 
     @Override
@@ -246,7 +262,6 @@ public class MainActivity extends AppCompatActivity
             fab.setColorNormalResId(bgColor);
             fab.setColorPressedResId(rippleColor);
             fab.setColorRippleResId(rippleColor);
-
         }
     }
 
@@ -256,6 +271,7 @@ public class MainActivity extends AppCompatActivity
         switch (view.getId()) {
             case R.id.fab_sort_popular:
                 sortBy = POPULARITY;
+                swipeRefresh.setEnabled(true);
 
                 setFabColor(fabSortPopular, R.color.colorAccentDark, R.color.colorAccent);
                 setFabColor(fabSortRating, R.color.colorPrimary, R.color.colorPrimaryDark);
@@ -264,136 +280,28 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.fab_sort_rating:
                 sortBy = RATING;
+                swipeRefresh.setEnabled(true);
 
                 setFabColor(fabSortRating, R.color.colorAccentDark, R.color.colorAccent);
                 setFabColor(fabSortPopular, R.color.colorPrimary, R.color.colorPrimaryDark);
                 setFabColor(fabSortFavourite, R.color.colorPrimary, R.color.colorPrimaryDark);
                 break;
             case R.id.fab_sort_favourites:
-
                 sortBy = FAVOURITE;
+                swipeRefresh.setEnabled(false); // disable for cursor loader, updates automatically
+
                 setFabColor(fabSortRating, R.color.colorPrimary, R.color.colorPrimaryDark);
                 setFabColor(fabSortPopular, R.color.colorPrimary, R.color.colorPrimaryDark);
                 setFabColor(fabSortFavourite, R.color.colorAccentDark, R.color.colorAccent);
         }
+        invalidateData();
         loadMovieData(1, sortBy);
     }
 
-    @Override
-    public Loader<List<Movie>> onCreateLoader(int id, final Bundle args) {
-        return new AsyncTaskLoader<List<Movie>>(this) {
-            public List<Movie> movieData;
-
-            int page;
-            int sortCrit;
-
-            @Override
-            protected void onStartLoading() {
-                Log.i(TAG, "Loader started loading");
-
-                page = args.getInt(MOVIE_PAGE_KEY);
-                sortCrit = args.getInt(MOVIE_SORT_KEY);
-
-                swipeRefresh.setRefreshing(true);
-
-                // if the data is already present and not favourites (data may have changed)
-                if (movieData != null && sortCrit != FAVOURITE) {
-                    Log.i(TAG, "Data already present");
-                    deliverResult(movieData);
-                    swipeRefresh.setRefreshing(false);
-                } else {
-                    forceLoad();
-                }
-            }
-
-            @Override
-            public List<Movie> loadInBackground() {
-
-                if (sortCrit == FAVOURITE) {
-                    Cursor cursor = getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,
-                            null,
-                            null,
-                            null,
-                            null
-                    );
-                    if (cursor == null) return null;
-
-                    List<Movie> data = new ArrayList<>();
-                    cursor.moveToFirst();
-                    try {
-                        while (cursor.moveToNext()) {
-                            data.add(new Movie(cursor));
-                        }
-                    } finally {
-                        cursor.close();
-                    }
-                    return data;
-                }
-
-                if (!NetworkUtils.isNetworkAvailable(MainActivity.this)) {
-                    swipeRefresh.setRefreshing(false);
-                    snackbar(R.string.no_network);
-                }
-                URL url = NetworkUtils.buildMovieUrl(page, sortCrit);
-
-                String jsonResponse;
-
-                try {
-                    jsonResponse = NetworkUtils.getResponseFromHttpUrl(url);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return null;// timeout
-                }
-
-                try {
-                    JSONObject jsonObject = new JSONObject(jsonResponse);
-                    if (jsonObject.has(MOVIES_STATUS_CODE)) {
-                        int errorCode = jsonObject.getInt(MOVIES_STATUS_CODE);
-                        switch (errorCode) {
-                            case 34: // The resource you requested could not be found.
-                                snackbar(R.string.error_resource_not_found);
-                                return null;
-                            case 7: // Invalid API key: You must be granted a valid key.
-                                snackbar(R.string.error_invalid_api_key);
-                                return null;
-                            default:
-                                // Server probably down
-                                return null;
-                        }
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    return null;
-                }
-
-                Movie.Result response = new Gson().fromJson(jsonResponse, Movie.Result.class);
-
-                if (response == null) {
-                    return null;
-                }
-                Log.i(TAG, "Loading in background");
-
-                return response.movies;
-            }
-
-            @Override
-            public void deliverResult(List<Movie> data) {
-                Log.i(TAG, "Loader deliver result");
-
-                movieData = data;
-                super.deliverResult(data);
-            }
-        };
-    }
 
     @Override
-    public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> movieData) {
-        Log.i(TAG, "onFinished loading");
+    public void onComplete(List<Movie> movieData) {
         movieAdapter.addMovieData(movieData);
         swipeRefresh.setRefreshing(false);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<List<Movie>> loader) {
     }
 }

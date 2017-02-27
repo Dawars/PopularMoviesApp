@@ -1,6 +1,7 @@
 package me.dawars.popularmoviesapp.ui;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -182,7 +183,7 @@ public class DetailFragment extends Fragment {
     }
 
     private void bindData(Movie movie) {
-        int width = DisplayUtils.getScreenMetrics(getActivity()).widthPixels / 2; //FIXME 100dp or so
+        int width = dpToPx(150);
         Uri posterUri = NetworkUtils.getImageUri(movie.getPosterPath(), width);
         Glide.with(this).load(posterUri).diskCacheStrategy(DiskCacheStrategy.ALL).into(posterImageView);
 
@@ -200,7 +201,13 @@ public class DetailFragment extends Fragment {
         titleTextView.setText(movie.getTitle());
         overviewTextView.setText(movie.getOverview());
         ratingTextView.setRating(movie.getVoteAvg());
-        releaseDateTextView.setText(movie.getReleaseDate());
+        releaseDateTextView.setText(movie.getReleaseDate()); //FIXME format date
+
+        // TODO add tag list
+    }
+
+    private int dpToPx(int dp) {
+        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }
 
 
