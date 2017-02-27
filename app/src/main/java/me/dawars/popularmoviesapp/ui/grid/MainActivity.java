@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity
 
     private EndlessRecyclerViewScrollListener scrollListener;
 
+    // TODO use data binding
     @BindView(R.id.tv_error)
     TextView errorMessageDisplay;
 
@@ -108,28 +109,7 @@ public class MainActivity extends AppCompatActivity
         ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
-
-        // restore Sorting criteria and fab menu
-        View fab = fabSortPopular;
-        if (savedInstanceState != null) {
-            // noinspection ResourceType
-            sortBy = savedInstanceState.getInt(MOVIE_SORT_KEY);
-            switch (sortBy) {
-                case POPULARITY:
-                    fab = fabSortPopular;
-                    break;
-                case RATING:
-                    fab = fabSortRating;
-                    break;
-                case FAVOURITE:
-                    fab = fabSortFavourite;
-                    break;
-            }
-        }
-        setFabColor(fab, R.color.colorAccentDark, R.color.colorAccent);
-
-        // disable fab menu icon rotation
-        fabMenu.setIconAnimated(false);
+        initFab(savedInstanceState);
 
         layoutManager = new GridLayoutManager(this, 3);
 
@@ -151,6 +131,9 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onRefresh() {
                 Log.v(TAG, "refreshing");
+                // reset data
+                invalidateData();
+
                 loadMovieData(1, sortBy);
             }
         });
@@ -178,6 +161,30 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    private void initFab(Bundle savedInstanceState) {
+        // disable fab menu icon rotation
+        fabMenu.setIconAnimated(false);
+
+        // restore Sorting criteria and fab menu
+        View fab = fabSortPopular;
+        if (savedInstanceState != null) {
+            // noinspection ResourceType
+            sortBy = savedInstanceState.getInt(MOVIE_SORT_KEY);
+            switch (sortBy) {
+                case POPULARITY:
+                    fab = fabSortPopular;
+                    break;
+                case RATING:
+                    fab = fabSortRating;
+                    break;
+                case FAVOURITE:
+                    fab = fabSortFavourite;
+                    break;
+            }
+        }
+        setFabColor(fab, R.color.colorAccentDark, R.color.colorAccent);
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -190,12 +197,14 @@ public class MainActivity extends AppCompatActivity
         // FIXME move fab menu when opening snackbar
     }
 
+    /**
+     * Loads movie data at page
+     *
+     * @param page
+     * @param sortBy
+     */
     private void loadMovieData(int page, @SortCriteria int sortBy) {
-        // TODO is page 1 called on screen rotate?
-        if (page == 1) { // if (re)loading 1st page replace data, otherwise add new pages
-            invalidateData();
-            scrollListener.resetState(); // FIXME don't call on device rotation
-        }
+        swipeRefresh.setRefreshing(true);
 
         LoaderManager loaderManager = getSupportLoaderManager();
 
@@ -208,6 +217,7 @@ public class MainActivity extends AppCompatActivity
 
     private void invalidateData() {
         movieAdapter.clearMovies();
+        scrollListener.resetState();
     }
 
     @Override
@@ -246,7 +256,6 @@ public class MainActivity extends AppCompatActivity
             fab.setColorNormalResId(bgColor);
             fab.setColorPressedResId(rippleColor);
             fab.setColorRippleResId(rippleColor);
-
         }
     }
 
@@ -256,6 +265,7 @@ public class MainActivity extends AppCompatActivity
         switch (view.getId()) {
             case R.id.fab_sort_popular:
                 sortBy = POPULARITY;
+                swipeRefresh.setEnabled(true);
 
                 setFabColor(fabSortPopular, R.color.colorAccentDark, R.color.colorAccent);
                 setFabColor(fabSortRating, R.color.colorPrimary, R.color.colorPrimaryDark);
@@ -264,18 +274,21 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.fab_sort_rating:
                 sortBy = RATING;
+                swipeRefresh.setEnabled(true);
 
                 setFabColor(fabSortRating, R.color.colorAccentDark, R.color.colorAccent);
                 setFabColor(fabSortPopular, R.color.colorPrimary, R.color.colorPrimaryDark);
                 setFabColor(fabSortFavourite, R.color.colorPrimary, R.color.colorPrimaryDark);
                 break;
             case R.id.fab_sort_favourites:
-
                 sortBy = FAVOURITE;
+                swipeRefresh.setEnabled(false); // disable for cursor loader, updates automatically
+
                 setFabColor(fabSortRating, R.color.colorPrimary, R.color.colorPrimaryDark);
                 setFabColor(fabSortPopular, R.color.colorPrimary, R.color.colorPrimaryDark);
                 setFabColor(fabSortFavourite, R.color.colorAccentDark, R.color.colorAccent);
         }
+        invalidateData();
         loadMovieData(1, sortBy);
     }
 
@@ -308,6 +321,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public List<Movie> loadInBackground() {
+                Log.i(TAG, "Loading in background");
 
                 if (sortCrit == FAVOURITE) {
                     Cursor cursor = getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,
@@ -333,6 +347,7 @@ public class MainActivity extends AppCompatActivity
                 if (!NetworkUtils.isNetworkAvailable(MainActivity.this)) {
                     swipeRefresh.setRefreshing(false);
                     snackbar(R.string.no_network);
+                    return null;
                 }
                 URL url = NetworkUtils.buildMovieUrl(page, sortCrit);
 
@@ -371,7 +386,6 @@ public class MainActivity extends AppCompatActivity
                 if (response == null) {
                     return null;
                 }
-                Log.i(TAG, "Loading in background");
 
                 return response.movies;
             }
@@ -389,6 +403,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> movieData) {
         Log.i(TAG, "onFinished loading");
+        if (sortBy == FAVOURITE) { // dont add again
+            invalidateData();
+        }
         movieAdapter.addMovieData(movieData);
         swipeRefresh.setRefreshing(false);
     }
