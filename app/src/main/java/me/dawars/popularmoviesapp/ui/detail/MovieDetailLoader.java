@@ -30,12 +30,12 @@ public class MovieDetailLoader implements LoaderManager.LoaderCallbacks<MovieDet
 
     private final Context context;
     private final ReviewAdapter reviewAdapter;
-    private final VideoAdapter videoAdapter;
+    private final TrailerAdapter trailerAdapter;
 
-    public MovieDetailLoader(Context context, ReviewAdapter reviewAdapter, VideoAdapter videoAdapter) {
+    public MovieDetailLoader(Context context, ReviewAdapter reviewAdapter, TrailerAdapter trailerAdapter) {
         this.context = context;
         this.reviewAdapter = reviewAdapter;
-        this.videoAdapter = videoAdapter;
+        this.trailerAdapter = trailerAdapter;
     }
 
     @Override
@@ -107,7 +107,7 @@ public class MovieDetailLoader implements LoaderManager.LoaderCallbacks<MovieDet
     @Override
     public void onLoadFinished(Loader<MovieDetail> loader, MovieDetail data) {
         reviewAdapter.setReviewData(data.reviews.reviews);
-        videoAdapter.setVideoData(data.videos.videos);
+        trailerAdapter.setVideoData(data.videos.videos);
 //        swipreRefresh.setRefreshing(false);
 
 //        if (review != null && review.size() > 0) {

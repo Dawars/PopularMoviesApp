@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import me.dawars.popularmoviesapp.R;
 import me.dawars.popularmoviesapp.adapter.ListItemClickListener;
@@ -21,11 +22,11 @@ import me.dawars.popularmoviesapp.data.Video;
  * Created by dawars on 1/15/17.
  */
 
-public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
+public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.VideoViewHolder> {
 
-    private static final String TAG = VideoAdapter.class.getSimpleName();
+    private static final String TAG = TrailerAdapter.class.getSimpleName();
 
-    private ArrayList<Video> videoData;
+    private List<Video> videoData = new ArrayList<>();
 
     private ListItemClickListener clickListener;
 
@@ -40,7 +41,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         this.clickListener = clickListener;
     }
 
-    public ArrayList<Video> getVideos() {
+    public List<Video> getVideos() {
         return videoData;
     }
 

@@ -15,4 +15,5 @@
     <string name="trailers">Trailers</string>
     <string name="message_removed_from_favorites">Movie removed from favourites</string>
     <string name="message_added_to_favorites">Movie added to favourites</string>
+    <string name="share">Share</string>
 </resources>
