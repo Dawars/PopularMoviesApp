@@ -1,11 +1,16 @@
 package me.dawars.popularmoviesapp.ui.grid;
 
+import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 
 public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnScrollListener {
+    private static final String CURRENT_PAGE_KEY = "CURRENT_PAGE";
+    private static final String ITEM_COUNT_KEY = "ITEM_COUNT";
+    private static final String IS_LOADING_KEY = "IS_LOADING";
+
     // The minimum amount of items to have below your current scroll position
     // before loading more.
     private int visibleThreshold = 3;
@@ -102,4 +107,15 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
     // Defines the process for actually loading more data based on page
     public abstract void onLoadMore(int page, int totalItemsCount, RecyclerView view);
 
+    public void onSaveInstance(Bundle outState) {
+        outState.putInt(CURRENT_PAGE_KEY, currentPage);
+        outState.putInt(ITEM_COUNT_KEY, previousTotalItemCount);
+        outState.putBoolean(IS_LOADING_KEY, loading);
+    }
+
+    public void onRestoreInstance(Bundle savedInstanceState) {
+        currentPage = savedInstanceState.getInt(CURRENT_PAGE_KEY);
+        previousTotalItemCount = savedInstanceState.getInt(ITEM_COUNT_KEY);
+        loading = savedInstanceState.getBoolean(IS_LOADING_KEY);
+    }
 }

@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity
 
     private static final String MOVIE_PAGE_KEY = "PAGE_KEY";
     private static final String MOVIE_SORT_KEY = "SORT_KEY";
+    public static final String MOVIE_LIST_KEY = "MOVIE_LIST_KEY";
 
     private static final String MOVIES_STATUS_CODE = "status_code";
     public static final int LOADER_MOVIE_ID = 1;
@@ -151,14 +153,24 @@ public class MainActivity extends AppCompatActivity
         };
         recyclerView.setOnScrollListener(scrollListener);
 
-        Log.v(TAG, "Init loader");
-        LoaderManager loaderManager = getSupportLoaderManager();
-        Bundle bundle = new Bundle();
-        bundle.putInt(MOVIE_PAGE_KEY, 1);
-        bundle.putInt(MOVIE_SORT_KEY, sortBy);
 
-        loaderManager.initLoader(LOADER_MOVIE_ID, bundle, this);
+        if (savedInstanceState != null) { // device rotate
+            invalidateData();
+            ArrayList<Movie> movies = savedInstanceState.getParcelableArrayList(MOVIE_LIST_KEY);
+            if (movies != null) {
+                movieAdapter.addMovieData(movies);
+            }
+            scrollListener.onRestoreInstance(savedInstanceState);
 
+        } else { // not rotate
+            Log.v(TAG, "Init loader");
+            LoaderManager loaderManager = getSupportLoaderManager();
+            Bundle bundle = new Bundle();
+            bundle.putInt(MOVIE_PAGE_KEY, 1);
+            bundle.putInt(MOVIE_SORT_KEY, sortBy);
+
+            loaderManager.initLoader(LOADER_MOVIE_ID, bundle, this);
+        }
     }
 
     private void initFab(Bundle savedInstanceState) {
@@ -189,6 +201,8 @@ public class MainActivity extends AppCompatActivity
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(MOVIE_SORT_KEY, sortBy);
+        outState.putParcelableArrayList(MOVIE_LIST_KEY, (ArrayList<? extends Parcelable>) movieAdapter.getMovies());
+        scrollListener.onSaveInstance(outState);
     }
 
 

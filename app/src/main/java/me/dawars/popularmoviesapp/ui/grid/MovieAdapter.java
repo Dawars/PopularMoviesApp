@@ -3,6 +3,7 @@ package me.dawars.popularmoviesapp.ui.grid;
 import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +38,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             throw new ArrayIndexOutOfBoundsException();
 
         return data.get(position);
+    }
+
+    public List<Movie> getMovies() {
+        return data;
     }
 
     public interface ListItemClickListener {
