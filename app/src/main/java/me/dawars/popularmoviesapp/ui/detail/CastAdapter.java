@@ -60,7 +60,7 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastViewHolder
         if (CastData == null) {
             return 0;
         }
-        return CastData.size();    // TODO: only display first few
+        return Math.min(5, CastData.size());    // TODO: only display first few
     }
 
     public void setCastData(ArrayList<Cast> CastData) {

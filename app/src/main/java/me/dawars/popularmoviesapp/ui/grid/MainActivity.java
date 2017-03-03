@@ -236,12 +236,13 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onItemClick(View v, int position) {
+        Movie movie = movieAdapter.getMovie(position);
+        Intent intent = DetailActivity.prepareIntent(this, movie);
+
+        /*
         ImageView posterIv = (ImageView) v.findViewById(R.id.im_poster);
         TextView titleTv = (TextView) v.findViewById(R.id.tv_title);
 
-        Movie movie = movieAdapter.getMovie(position);
-
-        Intent intent = DetailActivity.prepareIntent(this, movie);
 
         Pair<View, String> p1 = Pair.create((View) posterIv, getString(R.string.transition_poster));
         Pair<View, String> p2 = Pair.create((View) titleTv, getString(R.string.transition_title));// TODO: change to bg card
@@ -252,8 +253,9 @@ public class MainActivity extends AppCompatActivity
 //            supportPostponeEnterTransition(); //FIXME shared element transition postpone - going back from details freezes
             startActivity(intent, options.toBundle());
         } else {
-            startActivity(intent);
-        }
+*/
+        startActivity(intent);
+//        }
     }
 
     /**

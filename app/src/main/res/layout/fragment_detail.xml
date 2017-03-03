@@ -1,98 +1,182 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:img="http://schemas.android.com/apk/res-auto"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="@dimen/activity_horizontal_margin"
-    android:layout_marginRight="@dimen/activity_horizontal_margin"
-    android:orientation="vertical"
     tools:context="me.dawars.popularmoviesapp.ui.detail.DetailFragment">
 
-    <me.dawars.popularmoviesapp.ui.widget.ProportionalImageView
-        android:id="@+id/im_poster"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:transitionName="@string/transition_poster"
-        img:ratio="1.5" />
-
     <TextView
-        android:id="@+id/tv_title"
+        android:id="@+id/tv_release_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Title"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+
+        android:layout_marginLeft="@dimen/margin_horizontal"
+        android:layout_marginStart="@dimen/margin_horizontal"
+        android:layout_marginTop="@dimen/margin_top"
+        android:text="2016"
+        android:textColor="@color/colorGray"
+        android:textSize="12sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_char"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="@dimen/margin_horizontal"
+        android:layout_marginStart="@dimen/margin_horizontal"
+        android:text="@string/dot_char"
+        android:textColor="@color/colorGray"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_release_date"
+        app:layout_constraintLeft_toRightOf="@+id/tv_release_date"
+        app:layout_constraintTop_toTopOf="@+id/tv_release_date"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/tv_runtime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="120 min" />
+        android:layout_marginLeft="@dimen/margin_horizontal"
+        android:layout_marginStart="@dimen/margin_horizontal"
+        android:text="120 min"
+        android:textColor="@color/colorGray"
+        android:textSize="12sp"
+        app:layout_constraintLeft_toRightOf="@+id/tv_char"
+        app:layout_constraintTop_toTopOf="@+id/tv_release_date" />
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
+        android:text="Doctor Strange"
+        android:textColor="@color/colorBlack"
+        android:textSize="22sp"
+        app:layout_constraintLeft_toLeftOf="@+id/tv_release_date"
+        app:layout_constraintTop_toBottomOf="@+id/tv_release_date" />
+
+
+    <TextView
+        android:id="@+id/tv_tagline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="0dp"
+        android:text="Open your mind. Change your reality."
+        android:textColor="@color/colorDarkGray"
+        app:layout_constraintLeft_toLeftOf="@+id/tv_title"
+        app:layout_constraintTop_toBottomOf="@+id/tv_title" />
+
+
+    <TextView
+        android:id="@+id/overviewLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_horizontal"
+        android:layout_marginStart="@dimen/margin_horizontal"
+        android:layout_marginTop="16dp"
+        android:text="Overview"
+        android:textAppearance="@style/SectionTitle"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_tagline" />
+
 
     <RatingBar
         android:id="@+id/rb_rating"
         style="?android:attr/ratingBarStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/margin_horizontal"
+        android:layout_marginRight="@dimen/margin_horizontal"
         android:isIndicator="true"
         android:numStars="10"
         android:rating="3.5"
-        android:stepSize="0.1" />
-
-    <TextView
-        android:id="@+id/tv_release_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="2016-10-25" />
-
-    <TextView
-        android:id="@+id/tv_tagline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tagline"
-        android:textStyle="bold" />
+        android:stepSize="0.1"
+        app:layout_constraintBottom_toBottomOf="@+id/overviewLabel"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintLeft_toRightOf="@+id/overviewLabel"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/overviewLabel" />
 
     <TextView
         android:id="@+id/tv_overview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="4dp"
+        android:text="Overview text which is very long. Overview text which is very long. Overview text which is very long. Overview text which is very long. "
+        android:textColor="@color/colorBlack"
+        app:layout_constraintHorizontal_bias="0.0"
+        android:lineSpacingExtra="2dp"
+        app:layout_constraintLeft_toLeftOf="@+id/overviewLabel"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/overviewLabel" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/trailers_list"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="false" />
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:nestedScrollingEnabled="false"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_overview" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/genre_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="false" />
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="false"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/trailers_list" />
+
+    <TextView
+        android:id="@+id/castLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_horizontal"
+        android:layout_marginStart="@dimen/margin_horizontal"
+        android:layout_marginTop="16dp"
         android:text="@string/cast"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textAppearance="@style/SectionTitle"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/genre_list" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/cast_list"
-        android:layout_width="match_parent"
+        android:layout_width="368dp"
         android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="false" />
+        android:layout_marginTop="8dp"
+        android:nestedScrollingEnabled="false"
+        app:layout_constraintLeft_toLeftOf="parent"
+
+        app:layout_constraintTop_toBottomOf="@+id/castLabel" />
 
     <TextView
+        android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_horizontal"
+        android:layout_marginStart="@dimen/margin_horizontal"
+        android:layout_marginTop="16dp"
         android:text="@string/reviews"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textAppearance="@style/SectionTitle"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cast_list" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/reviews_list"
-        android:layout_width="match_parent"
+        android:layout_width="576dp"
         android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="false" />
+        android:nestedScrollingEnabled="false"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>
