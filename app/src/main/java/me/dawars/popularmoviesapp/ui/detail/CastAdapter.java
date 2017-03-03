@@ -71,7 +71,7 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastViewHolder
     class CastViewHolder extends RecyclerView.ViewHolder {
         public final TextView characterTextView;
         public final TextView nameTextView;
-        public final ImageView profileImage; // TODO: round image view
+        public final ImageView profileImage;
 
         public CastViewHolder(View itemView) {
             super(itemView);

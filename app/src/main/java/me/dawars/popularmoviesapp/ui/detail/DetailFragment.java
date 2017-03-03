@@ -241,7 +241,6 @@ public class DetailFragment extends Fragment {
         releaseDateTextView.setText(movie.getReleaseDate().substring(0, 4));
 
         genreAdapter.setGenreData(movie.getGenreIds());
-        // TODO add tagTextView list
     }
 
     private int dpToPx(int dp) {

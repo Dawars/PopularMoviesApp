@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity
 
     private EndlessRecyclerViewScrollListener scrollListener;
 
-    // TODO use data binding
     @BindView(R.id.tv_error)
     TextView errorMessageDisplay;
 
@@ -238,24 +237,7 @@ public class MainActivity extends AppCompatActivity
     public void onItemClick(View v, int position) {
         Movie movie = movieAdapter.getMovie(position);
         Intent intent = DetailActivity.prepareIntent(this, movie);
-
-        /*
-        ImageView posterIv = (ImageView) v.findViewById(R.id.im_poster);
-        TextView titleTv = (TextView) v.findViewById(R.id.tv_title);
-
-
-        Pair<View, String> p1 = Pair.create((View) posterIv, getString(R.string.transition_poster));
-        Pair<View, String> p2 = Pair.create((View) titleTv, getString(R.string.transition_title));// TODO: change to bg card
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, p1, p2);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            // wait for async to load
-//            supportPostponeEnterTransition(); //FIXME shared element transition postpone - going back from details freezes
-            startActivity(intent, options.toBundle());
-        } else {
-*/
         startActivity(intent);
-//        }
     }
 
     /**
@@ -340,7 +322,8 @@ public class MainActivity extends AppCompatActivity
                 Log.i(TAG, "Loading in background");
 
                 if (sortCrit == FAVOURITE) {
-                    Cursor cursor = getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,
+                    Cursor cursor = getContentResolver().query(
+                            MovieContract.MovieEntry.CONTENT_URI,
                             null,
                             null,
                             null,
@@ -349,7 +332,7 @@ public class MainActivity extends AppCompatActivity
                     if (cursor == null) return null;
 
                     List<Movie> data = new ArrayList<>();
-                    cursor.moveToFirst();
+                    Log.v(TAG, "favs" + cursor.getCount());
                     try {
                         while (cursor.moveToNext()) {
                             data.add(new Movie(cursor));

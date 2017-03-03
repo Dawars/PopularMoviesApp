@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,7 +113,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         public void bind(Movie record) {
 
             Uri posterUri = NetworkUtils.getImageUri(record.getPosterPath(), activity);
-            Glide.with(posterImageView.getContext()).load(posterUri).into(posterImageView);
+            Glide.with(posterImageView.getContext()).load(posterUri)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(posterImageView);
             titleTextView.setText(record.getTitle());
         }
 

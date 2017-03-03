@@ -94,7 +94,7 @@ public class DetailActivity extends AppCompatActivity {
 
         int width = DisplayUtils.getScreenMetrics(this).widthPixels;
         Uri backdropUri = NetworkUtils.getImageUri(movie.getBackdropPath(), width);
-        Glide.with(this).load(backdropUri).diskCacheStrategy(DiskCacheStrategy.ALL).into(backdropImage);
+        Glide.with(this).load(backdropUri).diskCacheStrategy(DiskCacheStrategy.RESULT).into(backdropImage);
 
     }
 

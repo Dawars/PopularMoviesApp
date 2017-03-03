@@ -6,7 +6,7 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="text_margin">16dp</dimen>
 
-    <dimen name="movie_detail_content_overlay">32dp</dimen>
+    <dimen name="movie_detail_content_overlay">0dp</dimen>
     <dimen name="padding_normal">16dp</dimen>
     <dimen name="z_card">2dp</dimen>
     <dimen name="avatar_bounds">48dp</dimen>
