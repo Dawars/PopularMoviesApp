@@ -63,8 +63,6 @@
         android:id="@+id/tv_tagline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="0dp"
-        android:layout_marginTop="0dp"
         android:text="Open your mind. Change your reality."
         android:textColor="@color/colorDarkGray"
         app:layout_constraintLeft_toLeftOf="@+id/tv_title"
@@ -105,13 +103,13 @@
         android:id="@+id/tv_overview"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginEnd="@dimen/margin_horizontal"
+        android:layout_marginRight="@dimen/margin_horizontal"
         android:layout_marginTop="4dp"
+        android:lineSpacingExtra="2dp"
         android:text="Overview text which is very long. Overview text which is very long. Overview text which is very long. Overview text which is very long. "
         android:textColor="@color/colorBlack"
         app:layout_constraintHorizontal_bias="0.0"
-        android:lineSpacingExtra="2dp"
         app:layout_constraintLeft_toLeftOf="@+id/overviewLabel"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/overviewLabel" />
@@ -120,9 +118,10 @@
         android:id="@+id/trailers_list"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginStart="12dp"
         android:layout_marginTop="8dp"
         android:nestedScrollingEnabled="false"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -131,10 +130,15 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/genre_list"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginStart="12dp"
         android:nestedScrollingEnabled="false"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/trailers_list" />
 
     <TextView
@@ -153,14 +157,13 @@
         android:id="@+id/cast_list"
         android:layout_width="368dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:nestedScrollingEnabled="false"
         app:layout_constraintLeft_toLeftOf="parent"
 
         app:layout_constraintTop_toBottomOf="@+id/castLabel" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/reviewsLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/margin_horizontal"
@@ -173,10 +176,10 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/reviews_list"
-        android:layout_width="576dp"
+        android:layout_width="368dp"
         android:layout_height="wrap_content"
         android:nestedScrollingEnabled="false"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/reviewsLabel" />
 
 </android.support.constraint.ConstraintLayout>

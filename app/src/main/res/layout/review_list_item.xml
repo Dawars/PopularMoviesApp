@@ -2,31 +2,33 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:padding="16dp"
     android:background="@drawable/review_background"
     android:clipToPadding="false"
     android:descendantFocusability="blocksDescendants"
     android:foreground="?android:selectableItemBackground"
-    android:minHeight="?android:listPreferredItemHeight"
-    android:paddingBottom="@dimen/padding_normal"
-    android:paddingEnd="@dimen/padding_normal"
-    android:paddingLeft="@dimen/padding_normal"
-    android:paddingRight="@dimen/padding_normal"
-    android:paddingStart="@dimen/padding_normal"
-    android:stateListAnimator="@animator/review_selection">
+    android:minHeight="?android:listPreferredItemHeight">
 
     <TextView
         android:id="@+id/tv_author"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Author"
+        android:textColor="@color/colorBlack"
+        android:textSize="14sp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tv_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tv_author"
+        android:layout_below="@+id/tv_author"
         android:ellipsize="end"
-        android:maxLines="3"
-        android:text="Blah blah blah blah blah blah blah blah blah blah blah blah blah" />
+        android:maxLines="4"
+        android:lineSpacingExtra="2dp"
+        android:text="Blah blah blah blah blah blah blah blah blah blah blah blah blah"
+        android:textColor="@color/colorDarkGray"
+        android:textSize="14sp"
+        android:textStyle="italic" />
+
 </RelativeLayout>

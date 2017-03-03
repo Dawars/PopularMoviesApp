@@ -9,13 +9,15 @@
 
     card_view:cardCornerRadius="2dp"
     card_view:cardPreventCornerOverlap="false"
-    card_view:cardUseCompatPadding="true">
+    card_view:cardUseCompatPadding="true"
+    android:layout_margin="4dp">
 
     <FrameLayout
         android:layout_width="300dp"
         android:layout_height="wrap_content">
 
-        <ImageView
+        <me.dawars.popularmoviesapp.ui.widget.ProportionalImageView
+            card_view:ratio="0.5625"
             android:id="@+id/iv_thumbnail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
