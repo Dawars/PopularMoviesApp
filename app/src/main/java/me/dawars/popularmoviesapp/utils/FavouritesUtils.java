@@ -3,6 +3,10 @@ package me.dawars.popularmoviesapp.utils;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import me.dawars.popularmoviesapp.data.Movie;
 import me.dawars.popularmoviesapp.data.MovieContract;
@@ -31,6 +35,7 @@ public class FavouritesUtils {
     }
 
     public boolean isFavorite(Movie movie) {
+        Log.v("FavUtil", "is favourite");
         boolean favorite = false;
         Cursor cursor = context.getContentResolver().query(
                 MovieContract.MovieEntry.CONTENT_URI,

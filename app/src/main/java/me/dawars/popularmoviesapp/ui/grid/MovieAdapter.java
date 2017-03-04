@@ -3,6 +3,7 @@ package me.dawars.popularmoviesapp.ui.grid;
 import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +39,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             throw new ArrayIndexOutOfBoundsException();
 
         return data.get(position);
+    }
+
+    public List<Movie> getMovies() {
+        return data;
     }
 
     public interface ListItemClickListener {
@@ -107,7 +113,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         public void bind(Movie record) {
 
             Uri posterUri = NetworkUtils.getImageUri(record.getPosterPath(), activity);
-            Glide.with(posterImageView.getContext()).load(posterUri).into(posterImageView);
+            Glide.with(posterImageView.getContext()).load(posterUri)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(posterImageView);
             titleTextView.setText(record.getTitle());
         }
 

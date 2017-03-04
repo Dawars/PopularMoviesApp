@@ -40,4 +40,5 @@
     <string name="war">War</string>
     <string name="western">Western</string>
     <string name="cast">Cast</string>
+    <string name="dot_char">•</string>
 </resources>

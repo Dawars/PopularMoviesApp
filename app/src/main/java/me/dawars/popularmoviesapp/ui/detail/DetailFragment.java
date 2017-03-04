@@ -70,8 +70,8 @@ public class DetailFragment extends Fragment {
 
     @BindView(R.id.tv_title)
     TextView titleTextView;
-    @BindView(R.id.im_poster)
-    ImageView posterImageView;
+//    @BindView(R.id.im_poster)
+//    ImageView posterImageView;
     @BindView(R.id.tv_tagline)
     TextView taglineTextView;
     @BindView(R.id.tv_runtime)
@@ -221,7 +221,7 @@ public class DetailFragment extends Fragment {
 
     private void bindData(Movie movie) {
         int width = dpToPx(150);
-        Uri posterUri = NetworkUtils.getImageUri(movie.getPosterPath(), width);
+        /*Uri posterUri = NetworkUtils.getImageUri(movie.getPosterPath(), width);
         Glide.with(this).load(posterUri).diskCacheStrategy(DiskCacheStrategy.ALL).into(posterImageView);
 
         posterImageView.getViewTreeObserver().addOnPreDrawListener(
@@ -233,7 +233,7 @@ public class DetailFragment extends Fragment {
                         return true;
                     }
                 }
-        );
+        );*/
 
         titleTextView.setText(movie.getTitle());
         overviewTextView.setText(movie.getOverview());
@@ -241,7 +241,6 @@ public class DetailFragment extends Fragment {
         releaseDateTextView.setText(movie.getReleaseDate().substring(0, 4));
 
         genreAdapter.setGenreData(movie.getGenreIds());
-        // TODO add tagTextView list
     }
 
     private int dpToPx(int dp) {

@@ -68,7 +68,7 @@ public abstract class MovieDetailLoader implements LoaderManager.LoaderCallbacks
                         int errorCode = jsonObject.getInt(STATUS_CODE);
                         switch (errorCode) {
                             case 34: // The resource you requested could not be found.
-//                                snackbar(R.string.error_resource_not_found); FIXME: display error
+//                                snackbar(R.string.error_resource_not_found);
                                 return null;
                             case 7: // Invalid API key: You must be granted a valid key.
 //                                snackbar(R.string.error_invalid_api_key);
